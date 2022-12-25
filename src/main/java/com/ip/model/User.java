@@ -1,7 +1,6 @@
 package com.ip.model;
 
 import com.ip.enums.UserType;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +19,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Entity
 @MappedSuperclass
 public abstract class User {
 	

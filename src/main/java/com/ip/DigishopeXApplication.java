@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MyntraCloneApplication {
+public class DigishopeXApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MyntraCloneApplication.class, args);
+		SpringApplication.run(DigishopeXApplication.class, args);
 	}
 
 }
