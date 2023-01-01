@@ -28,22 +28,18 @@ public class Customer extends User{
 	@NotBlank(message = "Customer Name Can't be Blank.")
 	@NotEmpty (message = "Customer Name Can't be Empty.")
 	@Size(min = 3, max = 20, message = "Customer Name length should be between 3 and 20 characters.")
-	@Column(name = "NAME")
-	private String customername;
+	@Column(name = "Name")
+	private String customerName;
 	
 	@Email
-	@Column(unique = true, name = "EMAIL")
-	private String customeremail;
+	@Column(unique = true, name = "Email")
+	private String customerEmail;
 	
-	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$",
-			message = "Password must contain 8 characters and should have atleast 1 Upper Case, 1 Small Case, 1 Number and 1 Special Character")
-	@Column(name = "PASSWORD")
-	private String customerpassword;
 	
 	@NotNull(message = "Mobile Number cannot be null.")
 	@Pattern(regexp = "[6789]{1}[0-9]{9}",message = "Invalid Mobile Number.")
-	@Column(name = "MOBILE")
-	private String customermobile;
+	@Column(name = "Mobile")
+	private String customerMobile;
 	
 	@Embedded
 	private Address address;

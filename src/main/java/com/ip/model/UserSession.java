@@ -22,13 +22,13 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-public class User_Session {
+public class UserSession {
 	
-	@Email
-	@Column(unique = true)
+	
 	@Id
-	private int email;	
-	private String key;
+	private Integer userid;
+	
+	private String token;
 	private LocalDateTime logindatetime;
 	
 	@Enumerated(EnumType.STRING)
