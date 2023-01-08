@@ -10,6 +10,6 @@ import com.ip.model.ProductRatings;
 @Repository
 public interface ProductRatingsRepo extends JpaRepository<ProductRatings, Integer>{
 	
-	public ProductRatings findByCustomerIdAndProductId(Integer customerId, UUID productId);
+	public ProductRatings findByCustomerIdAndProductId(Integer customerId, Integer productId);
 
 }

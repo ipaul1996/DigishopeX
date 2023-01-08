@@ -15,10 +15,4 @@ public class DigishopeXApplication {
 	}
 	
 	
-
-//	public Docket apis() {
-//		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.ip")).build();
-//	}
-
-	
 }

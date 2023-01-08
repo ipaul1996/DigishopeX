@@ -8,13 +8,13 @@ import com.ip.model.Category;
 
 public interface CategoryService {
 	
-	  public Category addCategory(Category category, String token) throws CredentialException; 
+	  public Category addCategory(Category category, String token) throws CredentialException,  CategoryException; 
 	  
 	  public Category updateCategory(Category category, String token) throws CategoryException, CredentialException;
 	  
 	  public Category deleteCategory(Integer categoryId, String token) throws CategoryException, CredentialException;
 	  
-	  public List<Category> getAllCategory(String token) throws CategoryException, CredentialException;
+	  public List<Category> getAllCategory() throws CategoryException;
 
 
 }

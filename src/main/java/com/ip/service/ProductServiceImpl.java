@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +44,31 @@ public class ProductServiceImpl implements ProductService {
 	private ProductRatingsRepo prRepo;
 
 	
+	public String formatString(String string) {
+		
+		if(string.isBlank() || string.isBlank() || string == null) {
+			return string;
+		}
+		
+		return  Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase();		
+	}
+	
+	
 	@Override
-	public Product createProduct(ProductDTO pdto, String token) throws CredentialException, CategoryException {
+	public Product createProduct(ProductDTO pdto, String token) throws CredentialException, CategoryException, ProductException {
 		
         UserSession userSession = sRepo.findByToken(token);
 		
 		if(userSession == null || userSession.getUserType() == UserType.CUSTOMER) {
 			throw new CredentialException("Please login as an admin");
+		}
+		
+		if(pdto.getProductId() != null) {
+			throw new ProductException("Product id is auto generated, you need not provide it explicitly");
+		}
+		
+		if(pdto.getCategoryName() == null) {
+			throw new CategoryException("You must provide category name while adding a product");
 		}
 		
 		Product p = new Product();
@@ -107,6 +124,10 @@ public class ProductServiceImpl implements ProductService {
 			throw new CredentialException("Please login as an admin");
 		}
 		
+		if(pdto.getProductId() == null) {
+			throw new ProductException("To update a product you must provide a correct product id");
+		}
+		
 		Optional<Product> op =  pRepo.findById(pdto.getProductId());
 		
 		if(op.isEmpty()) {
@@ -115,27 +136,42 @@ public class ProductServiceImpl implements ProductService {
 		
 		Product p = op.get();
 		
-		p.setProductName(pdto.getProductName());
-		p.setProductImage(pdto.getProductImage());
-		p.setDescription(pdto.getDescription());
-		p.setPrice(pdto.getPrice());
-		
-		Category category = cRepo.findByCategoryName(pdto.getCategoryName());
-		
-		if(category == null) {
-			throw new CategoryException("Please give a valid category name");
+		if(pdto.getProductName() != null) {
+			p.setProductName(pdto.getProductName());
 		}
 		
-		p.setCategory(category);
+		if(pdto.getProductImage() != null) {
+			p.setProductImage(pdto.getProductImage());
+		}
 		
-		category.getProducts().add(p);
+		if(pdto.getDescription() != null) {
+			p.setDescription(pdto.getDescription());
+		}
+		
+		if(pdto.getPrice() != null) {
+			p.setPrice(pdto.getPrice());
+		}
+		
+		if(pdto.getCategoryName() != null) {
+			
+			String categoryName = formatString(pdto.getCategoryName());			
+			Category category = cRepo.findByCategoryName(categoryName);
+			
+			if(category == null) {
+				throw new CategoryException("Please give a valid category name");
+			}
+			
+			p.setCategory(category);			
+			category.getProducts().add(p);
+			
+		}
 		
 		return pRepo.save(p);
 	}
 
 	
 	@Override
-	public Product deleteProduct(UUID productId, String token) throws CredentialException, ProductException {
+	public Product deleteProduct(Integer productId, String token) throws CredentialException, ProductException {
 		
 		UserSession userSession = sRepo.findByToken(token);
 		
@@ -156,14 +192,8 @@ public class ProductServiceImpl implements ProductService {
 
 	
 	@Override
-	public Product getProductByProductId(UUID productId, String token)
+	public Product getProductByProductId(Integer productId)
 			throws CredentialException, ProductException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Product> op = pRepo.findById(productId);
 		
@@ -176,14 +206,8 @@ public class ProductServiceImpl implements ProductService {
 
 	
 	@Override
-	public List<Product> getProductsByCategoryId(Integer categoryId, String token)
+	public List<Product> getProductsByCategoryId(Integer categoryId)
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op = cRepo.findById(categoryId);
 		
@@ -202,14 +226,8 @@ public class ProductServiceImpl implements ProductService {
 
 	
 	@Override
-	public List<Product> getProductsByCategoryName(String categoryName, String token)
+	public List<Product> getProductsByCategoryName(String categoryName)
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 	    Category category = cRepo.findByCategoryName(categoryName);
 		
@@ -228,14 +246,8 @@ public class ProductServiceImpl implements ProductService {
 
 	
 	@Override
-	public Map<Category, List<Product>> getAllProductsCategorywise(String token)
+	public Map<Category, List<Product>> getAllProductsCategorywise()
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		List<Category> allCategory = cRepo.findAll();
 		
@@ -254,14 +266,8 @@ public class ProductServiceImpl implements ProductService {
 
 	
 	@Override
-	public List<Product> sortProductsByNameAscendingForACategory(Integer categoryId, String token)
+	public List<Product> sortProductsByNameAscendingForACategory(Integer categoryId)
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op = cRepo.findById(categoryId);
 		
@@ -275,23 +281,18 @@ public class ProductServiceImpl implements ProductService {
 			throw new ProductException("No product found in the category " + op.get().getCategoryName());
 		}
 		
-		Collections.sort(products, (p1, p2) -> {
-			return p1.getProductName().compareTo(p2.getProductName());
-		});
+		products = products.stream()
+											.sorted((p1, p2) -> p1.getProductName().compareTo(p2.getProductName()))
+											.collect(Collectors.toList());
+							
 		
 		return products;
 	}
 
 	
 	@Override
-	public List<Product> sortProductsByNameDescendingForACategory(Integer categoryId, String token)
+	public List<Product> sortProductsByNameDescendingForACategory(Integer categoryId)
 			throws CredentialException, ProductException, CategoryException {
-		
-        UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op = cRepo.findById(categoryId);
 		
@@ -305,23 +306,17 @@ public class ProductServiceImpl implements ProductService {
 			throw new ProductException("No product found in the category " + op.get().getCategoryName());
 		}
 		
-		Collections.sort(products, (p1, p2) -> {
-			return p2.getProductName().compareTo(p1.getProductName());
-		});
-		
+		products = products.stream()
+				.sorted((p1, p2) -> p2.getProductName().compareTo(p1.getProductName()))
+				.collect(Collectors.toList());
+
 		return products;
 	}
 
 	
 	@Override
-	public List<Product> sortProductsByPriceAscendingForACategory(Integer categoryId, String token)
+	public List<Product> sortProductsByPriceAscendingForACategory(Integer categoryId)
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op = cRepo.findById(categoryId);
 		
@@ -335,23 +330,17 @@ public class ProductServiceImpl implements ProductService {
 			throw new ProductException("No product found in the category " + op.get().getCategoryName());
 		}
 		
-		Collections.sort(products, (p1, p2) -> {
-			return p1.getPrice() > p2.getPrice() ? +1 : p1.getPrice() < p2.getPrice() ? -1 : 0;
-		});
+		products = products.stream()
+											.sorted((p1, p2) -> p1.getPrice() > p2.getPrice() ? +1 : p1.getPrice() < p2.getPrice() ? -1 : 0)
+											.collect(Collectors.toList());
 		
 		return products;
 	}
 
 	
 	@Override
-	public List<Product> sortProductsByPriceDescendingForACategory(Integer categoryId, String token)
+	public List<Product> sortProductsByPriceDescendingForACategory(Integer categoryId)
 			throws CredentialException, ProductException, CategoryException {
-	
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op = cRepo.findById(categoryId);
 		
@@ -365,23 +354,17 @@ public class ProductServiceImpl implements ProductService {
 			throw new ProductException("No product found in the category " + op.get().getCategoryName());
 		}
 		
-		Collections.sort(products, (p1, p2) -> {
-			return p1.getPrice() < p2.getPrice() ? +1 : p1.getPrice() > p2.getPrice() ? -1 : 0;
-		});
-		
+		products = products.stream()
+				.sorted((p1, p2) -> p2.getPrice() > p1.getPrice() ? +1 : p2.getPrice() < p1.getPrice() ? -1 : 0)
+				.collect(Collectors.toList());
+
 		return products;
 	}
 
 	
 	@Override
-	public List<Product> sortProductsByRatingsAscendingForACategory(Integer categoryId, String token)
+	public List<Product> sortProductsByRatingsAscendingForACategory(Integer categoryId)
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op = cRepo.findById(categoryId);
 		
@@ -399,20 +382,18 @@ public class ProductServiceImpl implements ProductService {
 			return p1.getAvgRatings() > p2.getAvgRatings() ? +1 : p1.getAvgRatings() < p2.getAvgRatings() ? -1 : 0;
 		});
 		
+		products = products.stream()
+											.sorted((p1, p2) -> p1.getAvgRatings() > p2.getAvgRatings() ? +1 : p1.getAvgRatings() < p2.getAvgRatings() ? -1 : 0)
+											.collect(Collectors.toList());
+		
 		return products;
 		
 	}
 
 	
 	@Override
-	public List<Product> sortProductsByRatingsDescendingForACategory(Integer categoryId, String token)
+	public List<Product> sortProductsByRatingsDescendingForACategory(Integer categoryId)
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op = cRepo.findById(categoryId);
 		
@@ -426,23 +407,17 @@ public class ProductServiceImpl implements ProductService {
 			throw new ProductException("No product found in the category " + op.get().getCategoryName());
 		}
 		
-		Collections.sort(products, (p1, p2) -> {
-			return p1.getAvgRatings() < p2.getAvgRatings() ? +1 : p1.getAvgRatings() > p2.getAvgRatings() ? -1 : 0;
-		});
-		
+		products = products.stream()
+				.sorted((p1, p2) -> p2.getAvgRatings() > p1.getAvgRatings() ? +1 : p2.getAvgRatings() < p1.getAvgRatings() ? -1 : 0)
+				.collect(Collectors.toList());
+
 		return products;
 	}
 
 	
 	@Override
-	public List<Product> filterProductsByRatingsForACategory(CategoryRatingsDTO dto, String token)
+	public List<Product> filterProductsByRatingsForACategory(CategoryRatingsDTO dto)
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op =  cRepo.findById(dto.getCategoryId());
 		
@@ -466,14 +441,8 @@ public class ProductServiceImpl implements ProductService {
 
 	
 	@Override
-	public List<Product> filterProductsByPriceForACategory(CategoryPriceDTO dto, String token)
+	public List<Product> filterProductsByPriceForACategory(CategoryPriceDTO dto)
 			throws CredentialException, ProductException, CategoryException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to get product details");
-		}
 		
 		Optional<Category> op =  cRepo.findById(dto.getCategoryId());
 		
@@ -498,7 +467,7 @@ public class ProductServiceImpl implements ProductService {
 
 	
 	@Override
-	public Product rateAProduct(UUID productId, Integer ratings, String token)
+	public Product rateAProduct(Integer productId, Integer ratings, String token)
 			throws CredentialException, ProductException {
 		
 		UserSession userSession = sRepo.findByToken(token);
@@ -546,7 +515,7 @@ public class ProductServiceImpl implements ProductService {
 
 
 	@Override
-	public Product editRatingsOfAProduct(UUID productId, Integer ratings, String token)
+	public Product editRatingsOfAProduct(Integer productId, Integer ratings, String token)
 			throws CredentialException, ProductException {
 		
 		UserSession userSession = sRepo.findByToken(token);

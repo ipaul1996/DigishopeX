@@ -38,7 +38,7 @@ public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ProductID")
-	private UUID productId;
+	private Integer productId;
 	
 	@Column(name = "ProductImage")
 	@NotNull(message = "Image URL Can't be null.")

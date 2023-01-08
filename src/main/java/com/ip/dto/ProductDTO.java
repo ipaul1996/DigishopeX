@@ -1,6 +1,6 @@
 package com.ip.dto;
 
-import java.util.UUID;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class ProductDTO {
 	
-	private UUID productId;
+	private Integer productId;
 	private String productImage;
 	private String productName;
 	private String description;

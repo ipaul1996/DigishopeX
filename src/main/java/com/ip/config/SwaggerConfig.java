@@ -16,8 +16,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
-        return new ApiInfo("MyApp Rest APIs",
-                "APIs for MyApp.",
+        return new ApiInfo("DigishopeX RESTful API",
+                "APIs for DigishopeX.",
                 "1.0",
                 "Terms of service",
                 new Contact("test", "www.org.com", "test@emaildomain.com"),

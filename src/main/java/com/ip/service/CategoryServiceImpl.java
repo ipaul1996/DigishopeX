@@ -25,19 +25,25 @@ public class CategoryServiceImpl implements CategoryService{
 	@Autowired
 	CategoryRepo cRepo;
 
+	
 	@Override
-	public Category addCategory(Category category, String token) throws CredentialException {
+	public Category addCategory(Category category, String token) throws CredentialException, CategoryException {
 		
 		UserSession userSession = sRepo.findByToken(token);
 		
 		if(userSession == null || userSession.getUserType() == UserType.CUSTOMER) {
 			throw new CredentialException("Please login as an admin");
 		}
+		
+		if(category.getCategoryId() != null) {
+			throw new CategoryException("Category id is auto generated, you need not provide it explicitly...");
+		}
 	    
 	    return cRepo.save(category);
 		
 	}
 
+	
 	@Override
 	public Category updateCategory(Category category, String token) throws CategoryException, CredentialException {
 		
@@ -47,15 +53,32 @@ public class CategoryServiceImpl implements CategoryService{
 			throw new CredentialException("Please login as an admin");
 		}
 		
+		if(category.getCategoryId() == null) {
+			throw new CategoryException("You need to provide correct category id to pergform this action ");
+		}
+		
 	    Optional<Category> op =  cRepo.findById(category.getCategoryId());
 	    
 	    if(op.isEmpty()) {
 	    	throw new CategoryException("Invalid category id");
 	    }
 	    
-	    return cRepo.save(category);
+	    if(category.getCategoryName() != null) {
+	    	op.get().setCategoryName(category.getCategoryName());
+	    }
+	    
+	    if(category.getDescription() != null) {
+	    	op.get().setDescription(category.getDescription());
+	    }
+	    
+	    if(category.getImageUrl() != null) {
+	    	op.get().setImageUrl(category.getImageUrl());
+	    }
+	    
+	    return cRepo.save(op.get());
 	}
 
+	
 	@Override
 	public Category deleteCategory(Integer categoryId, String token) throws CategoryException, CredentialException {
 		
@@ -78,13 +101,7 @@ public class CategoryServiceImpl implements CategoryService{
 	
 	
 	@Override
-	public List<Category> getAllCategory(String token) throws CategoryException, CredentialException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null) {
-			throw new CredentialException("Please login to view all categories");
-		}
+	public List<Category> getAllCategory() throws CategoryException {
 		
 		List<Category> allCategory = cRepo.findAll();
 		

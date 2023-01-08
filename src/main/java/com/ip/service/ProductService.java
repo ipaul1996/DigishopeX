@@ -2,7 +2,6 @@ package com.ip.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import com.ip.dto.CategoryPriceDTO;
 import com.ip.dto.CategoryRatingsDTO;
@@ -16,39 +15,39 @@ import com.ip.model.Product;
 
 public interface ProductService {
 	
-	public Product createProduct(ProductDTO pdto, String token) throws CredentialException, CategoryException;
+	public Product createProduct(ProductDTO pdto, String token) throws CredentialException, CategoryException,  ProductException;
 	
 	public Product addExistingProduct(ProductDTOV2 pdto, String token) throws CredentialException, ProductException;
 	
 	public Product updateProduct(ProductDTO pdto, String token) throws CredentialException, ProductException, CategoryException;
 	
-	public Product deleteProduct(UUID productid, String token) throws CredentialException, ProductException;
+	public Product deleteProduct(Integer productid, String token) throws CredentialException, ProductException;
 	
-	public Product getProductByProductId(UUID productId, String token) throws CredentialException, ProductException;
+	public Product getProductByProductId(Integer productId) throws CredentialException, ProductException;
 	
-	public List<Product> getProductsByCategoryId(Integer categoryId, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> getProductsByCategoryId(Integer categoryId) throws CredentialException, ProductException, CategoryException;
 
-	public List<Product> getProductsByCategoryName(String categoryName, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> getProductsByCategoryName(String categoryName) throws CredentialException, ProductException, CategoryException;
 	
-	public Map<Category, List<Product>> getAllProductsCategorywise(String token) throws CredentialException, ProductException, CategoryException;
+	public Map<Category, List<Product>> getAllProductsCategorywise() throws CredentialException, ProductException, CategoryException;
 		
-	public List<Product> sortProductsByNameAscendingForACategory(Integer categoryId, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByNameAscendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
 	
-	public List<Product> sortProductsByNameDescendingForACategory(Integer categoryId, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByNameDescendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
 	
-	public List<Product> sortProductsByPriceAscendingForACategory(Integer categoryId, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByPriceAscendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
 	
-	public List<Product> sortProductsByPriceDescendingForACategory(Integer categoryId, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByPriceDescendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
 
-	public List<Product> sortProductsByRatingsAscendingForACategory(Integer categoryId, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByRatingsAscendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
 	
-	public List<Product> sortProductsByRatingsDescendingForACategory(Integer categoryId, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByRatingsDescendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
 
-    public List<Product> filterProductsByRatingsForACategory(CategoryRatingsDTO dto, String token) throws CredentialException, ProductException, CategoryException;
+    public List<Product> filterProductsByRatingsForACategory(CategoryRatingsDTO dto) throws CredentialException, ProductException, CategoryException;
 	
-	public List<Product> filterProductsByPriceForACategory(CategoryPriceDTO dto, String token) throws CredentialException, ProductException, CategoryException;
+	public List<Product> filterProductsByPriceForACategory(CategoryPriceDTO dto) throws CredentialException, ProductException, CategoryException;
 
-	public Product rateAProduct(UUID productId, Integer ratings, String token) throws CredentialException, ProductException;
+	public Product rateAProduct(Integer productId, Integer ratings, String token) throws CredentialException, ProductException;
 	
-	public Product editRatingsOfAProduct(UUID productId, Integer ratings, String token) throws CredentialException, ProductException;
+	public Product editRatingsOfAProduct(Integer productId, Integer ratings, String token) throws CredentialException, ProductException;
 }

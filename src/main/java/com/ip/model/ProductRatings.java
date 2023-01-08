@@ -1,6 +1,5 @@
 package com.ip.model;
 
-import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,7 +27,7 @@ public class ProductRatings {
 	
 	Integer customerId;
 	
-	UUID productId;
+	Integer productId;
 	
 	@NotNull(message = "Ratings can not be null")
 	Integer ratings;
