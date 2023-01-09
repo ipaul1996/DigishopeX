@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 		p.setPrice(pdto.getPrice());
 		p.setStockQuantity(pdto.getQuanity());
 		
-		Category category = cRepo.findByCategoryName(pdto.getCategoryName());
+		Category category = cRepo.findByCategoryName(formatString(pdto.getCategoryName()));
 		
 		if(category == null) {
 			throw new CategoryException("Please give a valid category name");
@@ -153,9 +153,8 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		if(pdto.getCategoryName() != null) {
-			
-			String categoryName = formatString(pdto.getCategoryName());			
-			Category category = cRepo.findByCategoryName(categoryName);
+					
+			Category category = cRepo.findByCategoryName(formatString(pdto.getCategoryName()));
 			
 			if(category == null) {
 				throw new CategoryException("Please give a valid category name");
@@ -229,7 +228,7 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> getProductsByCategoryName(String categoryName)
 			throws CredentialException, ProductException, CategoryException {
 		
-	    Category category = cRepo.findByCategoryName(categoryName);
+	    Category category = cRepo.findByCategoryName(formatString(categoryName));
 		
 		if(category == null) {
 			throw new CategoryException("Invalid category name");
@@ -282,7 +281,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		products = products.stream()
-											.sorted((p1, p2) -> p1.getProductName().compareTo(p2.getProductName()))
+											.sorted((p1, p2) -> formatString(p1.getProductName()).compareTo(formatString(p2.getProductName())))
 											.collect(Collectors.toList());
 							
 		
@@ -307,8 +306,8 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		products = products.stream()
-				.sorted((p1, p2) -> p2.getProductName().compareTo(p1.getProductName()))
-				.collect(Collectors.toList());
+											.sorted((p1, p2) -> formatString(p2.getProductName()).compareTo(formatString(p1.getProductName())))
+											.collect(Collectors.toList());
 
 		return products;
 	}
@@ -416,50 +415,58 @@ public class ProductServiceImpl implements ProductService {
 
 	
 	@Override
-	public List<Product> filterProductsByRatingsForACategory(CategoryRatingsDTO dto)
+	public List<Product> filterProductsByRatingsForACategory(Integer categoryId, Integer minRatings, Integer maxRatings)
 			throws CredentialException, ProductException, CategoryException {
 		
-		Optional<Category> op =  cRepo.findById(dto.getCategoryId());
+		Optional<Category> op =  cRepo.findById(categoryId);
 		
 		if(op.isEmpty()) {
-			throw new CategoryException("No category found with the is " + dto.getCategoryId());
+			throw new CategoryException("No category found with the is " + categoryId);
 		}
 		
-		Double maxRatings = dto.getMaxRatings().doubleValue();
-		Double minRatings = dto.getMinRatings().doubleValue();
+		if(maxRatings == null || minRatings == null) {
+			throw new CategoryException("Invalid ratings range");
+		}
 		
-		if(maxRatings <= minRatings || minRatings < 0) {
+		Double maxRatings1 = maxRatings.doubleValue();
+		Double minRatings1 = minRatings.doubleValue();
+		
+		if(maxRatings1 <= minRatings1 || minRatings1 < 0 ) {
 			throw new ProductException("Invalid ratings range");
 		}
 		
 		List<Product> products =  op.get().getProducts().stream()
-																							 .filter(p -> p.getAvgRatings() >= minRatings && p.getAvgRatings() <= maxRatings)
-																							 .collect(Collectors.toList());
+																							  .filter(p -> p.getAvgRatings() >= minRatings1 && p.getAvgRatings() <= maxRatings1)
+																							  .collect(Collectors.toList());
 		
 		return products;
 	}
 
 	
 	@Override
-	public List<Product> filterProductsByPriceForACategory(CategoryPriceDTO dto)
+	public List<Product> filterProductsByPriceForACategory(Integer categoryId, Double minPrice, Double maxPrice)
 			throws CredentialException, ProductException, CategoryException {
 		
-		Optional<Category> op =  cRepo.findById(dto.getCategoryId());
-		
-		if(op.isEmpty()) {
-			throw new CategoryException("No category found with the is " + dto.getCategoryId());
+		if(categoryId == null) {
+			throw new CategoryException("Category is can not be null");
 		}
 		
-		Double maxPrice = dto.getMaxPrice();
-		Double minPrice = dto.getMinPrice();
+		Optional<Category> op =  cRepo.findById(categoryId);
 		
-		if(maxPrice <= minPrice || minPrice < 1) {
+		if(op.isEmpty()) {
+			throw new CategoryException("No category found with the is " + categoryId);
+		}
+		
+		Double maxPrice1 = maxPrice;
+		Double minPrice1 = minPrice;
+		
+		if(maxPrice1 <= minPrice1 || minPrice1 < 1 || maxPrice1 == null || minPrice1 == null) {
 			throw new ProductException("Invalid price range");
 		}
 		
 		List<Product> products =  op.get().getProducts().stream()
-																							.filter(p -> p.getPrice() >= minPrice && p.getPrice() <= maxPrice)
-																							.collect(Collectors.toList());
+																							 .filter(p -> p.getPrice() >= minPrice1 && p.getPrice() <= maxPrice1)
+																							 .collect(Collectors.toList());
 		
 		return products;
 		

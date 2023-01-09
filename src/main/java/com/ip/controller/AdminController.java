@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ip.dto.CategoryPriceDTO;
+import com.ip.dto.CategoryRatingsDTO;
 import com.ip.dto.ProductDTO;
+import com.ip.dto.ProductDTOV2;
 import com.ip.exception.AdminException;
 import com.ip.exception.CategoryException;
 import com.ip.exception.CredentialException;
@@ -62,8 +65,8 @@ public class AdminController {
 	}
 	
 	
-	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Admin>  deleteAdminHandler(@PathVariable("id") Integer adminId, 
+	@DeleteMapping("/delete/{adid}")
+	public ResponseEntity<Admin>  deleteAdminHandler(@PathVariable("adid") Integer adminId, 
 																			@RequestParam("token") String token) throws AdminException, CredentialException {
 		return new ResponseEntity<Admin>(aService.deleteAdmin(adminId, token), HttpStatus.OK);
 	}
@@ -82,8 +85,8 @@ public class AdminController {
 		return new ResponseEntity<Category>(cService.updateCategory(category, token), HttpStatus.ACCEPTED);
 	}
 	
-	@DeleteMapping("/categories/delete/{id}")
-	public ResponseEntity<Category> deleteCategoryHandler(@PathVariable("id") @NotNull Integer categoryId,  @RequestParam("token") String token) throws CategoryException, CredentialException {
+	@DeleteMapping("/categories/delete/{catid}")
+	public ResponseEntity<Category> deleteCategoryHandler(@PathVariable("catid") @NotNull Integer categoryId,  @RequestParam("token") String token) throws CategoryException, CredentialException {
 		return new ResponseEntity<Category>(cService.deleteCategory(categoryId, token), HttpStatus.OK);
 	}
 	
@@ -102,15 +105,79 @@ public class AdminController {
 		return new ResponseEntity<Product>(pService.createProduct(pdto, token), HttpStatus.CREATED);
 	}
 	
+	@PostMapping("/products/add")
+	public ResponseEntity<Product> addExistingProductHandler(ProductDTOV2 pdto, @RequestParam("token") String token) throws CredentialException, ProductException {
+		return new ResponseEntity<Product>(pService.addExistingProduct(pdto, token), HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/products/update")
+	public ResponseEntity<Product> updateProductHandler(ProductDTO pdto, @RequestParam("token") String token) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<Product>(pService.updateProduct(pdto, token), HttpStatus.ACCEPTED);
+	}
+	
+	@DeleteMapping("/products/delete/{pid}")
+	public ResponseEntity<Product> deleteProductHandler( @PathVariable("pid") @NotNull Integer productid, @RequestParam("token") String token) throws CredentialException, ProductException {
+		return new ResponseEntity<Product>(pService.deleteProduct(productid, token), HttpStatus.OK);
+	}
+	
+	@GetMapping("/products/get/{pid}")
+	public ResponseEntity<Product> getProductByProductIdHandler( @PathVariable("pid") @NotNull Integer productId) throws CredentialException, ProductException {
+		return new ResponseEntity<Product>(pService.getProductByProductId(productId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/products/getbycategoryid/{catid}")
+	public ResponseEntity<List<Product>> getProductsByCategoryIdHandler( @PathVariable("catid") @NotNull Integer categoryId) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.getProductsByCategoryId(categoryId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/products/getbycategoryname/{name}")
+	public ResponseEntity<List<Product>> getProductsByCategoryNameHandler( @PathVariable("name") String categoryName) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.getProductsByCategoryName(categoryName), HttpStatus.OK);
+	}
+	
 	@GetMapping("/products/getall")
 	public ResponseEntity<Map<Category, List<Product>>> getAllProductsCategorywiseHandler() throws CredentialException, ProductException, CategoryException {
-		return new ResponseEntity<Map<Category,List<Product>>>(pService.getAllProductsCategorywise(), HttpStatus.FOUND);
+		return new ResponseEntity<Map<Category,List<Product>>>(pService.getAllProductsCategorywise(), HttpStatus.OK);
 	}
-
 	
+	@GetMapping("/products/sortbyname/asc/{catid}")
+	public ResponseEntity<List<Product>> sortProductsByNameAscendingForACategoryHandler(@PathVariable("catid") @NotNull Integer categoryId) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.sortProductsByNameAscendingForACategory(categoryId), HttpStatus.OK);
+	}
 	
+	@GetMapping("/products/sortbyname/desc/{catid}")
+	public ResponseEntity<List<Product>> sortProductsByNameDescendingForACategoryHandler(@PathVariable("catid") @NotNull Integer categoryId) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.sortProductsByNameDescendingForACategory(categoryId), HttpStatus.OK);
+	}
 	
+	@GetMapping("/products/sortbyprice/asc/{catid}")
+	public ResponseEntity<List<Product>> sortProductsByPriceAscendingForACategoryHandler(@PathVariable("catid") @NotNull Integer categoryId) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.sortProductsByPriceAscendingForACategory(categoryId), HttpStatus.OK);
+	}
 	
+	@GetMapping("/products/sortbyprice/desc/{catid}")
+	public ResponseEntity<List<Product>> sortProductsByPriceDescendingForACategoryHandler(@PathVariable("catid") @NotNull Integer categoryId) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.sortProductsByPriceDescendingForACategory(categoryId), HttpStatus.OK);
+	}
 	
+	@GetMapping("/products/sortbyratings/asc/{catid}")
+	public ResponseEntity<List<Product>> sortProductsByRatingsAscendingForACategoryHandler(@PathVariable("catid") @NotNull Integer categoryId) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.sortProductsByRatingsAscendingForACategory(categoryId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/products/sortbyratings/desc/{catid}")
+	public ResponseEntity<List<Product>> sortProductsByRatingsDescendingForACategoryHandler(@PathVariable("catid") @NotNull Integer categoryId) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.sortProductsByRatingsDescendingForACategory(categoryId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/products/filterbyprice/{cid}/{min}/{max}")
+	public ResponseEntity<List<Product>> filterProductsByPriceForACategoryHandler(@PathVariable("cid") @NotNull Integer categoryId, @PathVariable("min") @NotNull Double minPrice, @PathVariable("max") @NotNull Double maxPrice) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.filterProductsByPriceForACategory(categoryId, minPrice, maxPrice), HttpStatus.OK);
+	}
+	
+	@GetMapping("/products/filterbyratings/{cid}/{min}/{max}")
+	public ResponseEntity<List<Product>> filterProductsByRatingsForACategoryHandler(@PathVariable("cid") @NotNull Integer categoryId, @PathVariable("min") @NotNull Integer minRatings, @PathVariable("max") @NotNull Integer maxRatings) throws CredentialException, ProductException, CategoryException {
+		return new ResponseEntity<List<Product>>(pService.filterProductsByRatingsForACategory(categoryId, minRatings, maxRatings), HttpStatus.OK);
+	}
 	
 }

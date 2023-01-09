@@ -43,9 +43,9 @@ public interface ProductService {
 	
 	public List<Product> sortProductsByRatingsDescendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
 
-    public List<Product> filterProductsByRatingsForACategory(CategoryRatingsDTO dto) throws CredentialException, ProductException, CategoryException;
+    public List<Product> filterProductsByRatingsForACategory(Integer categoryId, Integer minRatings, Integer maxRatings) throws CredentialException, ProductException, CategoryException;
 	
-	public List<Product> filterProductsByPriceForACategory(CategoryPriceDTO dto) throws CredentialException, ProductException, CategoryException;
+	public List<Product> filterProductsByPriceForACategory(Integer categoryId, Double minPrice, Double maxPrice) throws CredentialException, ProductException, CategoryException;
 
 	public Product rateAProduct(Integer productId, Integer ratings, String token) throws CredentialException, ProductException;
 	

@@ -24,6 +24,16 @@ public class CategoryServiceImpl implements CategoryService{
 	
 	@Autowired
 	CategoryRepo cRepo;
+	
+	
+	public String formatString(String string) {
+		
+		if(string.isBlank() || string.isBlank() || string == null) {
+			return string;
+		}
+		
+		return  Character.toUpperCase(string.charAt(0)) + string.substring(1).toLowerCase();		
+	}
 
 	
 	@Override
@@ -38,6 +48,8 @@ public class CategoryServiceImpl implements CategoryService{
 		if(category.getCategoryId() != null) {
 			throw new CategoryException("Category id is auto generated, you need not provide it explicitly...");
 		}
+		
+		category.setCategoryName(formatString(category.getCategoryName()));
 	    
 	    return cRepo.save(category);
 		
@@ -64,7 +76,7 @@ public class CategoryServiceImpl implements CategoryService{
 	    }
 	    
 	    if(category.getCategoryName() != null) {
-	    	op.get().setCategoryName(category.getCategoryName());
+	    	op.get().setCategoryName(formatString(category.getCategoryName()));
 	    }
 	    
 	    if(category.getDescription() != null) {

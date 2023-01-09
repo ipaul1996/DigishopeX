@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.DecimalMin;
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +33,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 public class Product {
 	
@@ -71,7 +72,7 @@ public class Product {
 	@Column(name = "NoOfPeopleRated")
 	private Integer noOfPeopleRated = 0;
 	
-	
+	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL)
 	List<ProductRatings> productRatings = new ArrayList<>();
 	
@@ -82,6 +83,10 @@ public class Product {
 	
 	@Column(name = "StockQuantity")
 	private Integer stockQuantity = 0;
+	
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
+	private List<Cart> cartList = new ArrayList<>();
 	
 
 }
