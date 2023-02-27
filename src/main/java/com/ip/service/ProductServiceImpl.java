@@ -281,8 +281,8 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		products = products.stream()
-											.sorted((p1, p2) -> formatString(p1.getProductName()).compareTo(formatString(p2.getProductName())))
-											.collect(Collectors.toList());
+						.sorted((p1, p2) -> formatString(p1.getProductName()).compareTo(formatString(p2.getProductName())))
+						.collect(Collectors.toList());
 							
 		
 		return products;
@@ -306,8 +306,8 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		products = products.stream()
-											.sorted((p1, p2) -> formatString(p2.getProductName()).compareTo(formatString(p1.getProductName())))
-											.collect(Collectors.toList());
+						.sorted((p1, p2) -> formatString(p2.getProductName()).compareTo(formatString(p1.getProductName())))
+						.collect(Collectors.toList());
 
 		return products;
 	}
@@ -330,8 +330,8 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		products = products.stream()
-											.sorted((p1, p2) -> p1.getPrice() > p2.getPrice() ? +1 : p1.getPrice() < p2.getPrice() ? -1 : 0)
-											.collect(Collectors.toList());
+						.sorted((p1, p2) -> p1.getPrice() > p2.getPrice() ? +1 : p1.getPrice() < p2.getPrice() ? -1 : 0)
+					    .collect(Collectors.toList());
 		
 		return products;
 	}
@@ -382,8 +382,8 @@ public class ProductServiceImpl implements ProductService {
 		});
 		
 		products = products.stream()
-											.sorted((p1, p2) -> p1.getAvgRatings() > p2.getAvgRatings() ? +1 : p1.getAvgRatings() < p2.getAvgRatings() ? -1 : 0)
-											.collect(Collectors.toList());
+						.sorted((p1, p2) -> p1.getAvgRatings() > p2.getAvgRatings() ? +1 : p1.getAvgRatings() < p2.getAvgRatings() ? -1 : 0)
+						.collect(Collectors.toList());
 		
 		return products;
 		
@@ -436,8 +436,8 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		List<Product> products =  op.get().getProducts().stream()
-																							  .filter(p -> p.getAvgRatings() >= minRatings1 && p.getAvgRatings() <= maxRatings1)
-																							  .collect(Collectors.toList());
+													.filter(p -> p.getAvgRatings() >= minRatings1 && p.getAvgRatings() <= maxRatings1)
+													.collect(Collectors.toList());
 		
 		return products;
 	}
@@ -465,8 +465,8 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		List<Product> products =  op.get().getProducts().stream()
-																							 .filter(p -> p.getPrice() >= minPrice1 && p.getPrice() <= maxPrice1)
-																							 .collect(Collectors.toList());
+													.filter(p -> p.getPrice() >= minPrice1 && p.getPrice() <= maxPrice1)
+													.collect(Collectors.toList());
 		
 		return products;
 		

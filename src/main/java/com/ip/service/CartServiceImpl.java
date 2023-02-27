@@ -96,7 +96,7 @@ public class CartServiceImpl implements CartService {
 		} else {
 			
 			if(c.getCart().getProducts().stream().anyMatch(p1 -> p1.getProductId() == dto.getProductId())) {
-				throw new ProductException("The selected product has already been added into the cart");
+				p.setStockQuantity(p.getStockQuantity() - dto.getQuantity());
 				
 			} else {
 				
@@ -105,15 +105,24 @@ public class CartServiceImpl implements CartService {
 				c.getCart().getProducts().add(p);
 				p.getCartList().add(c.getCart());
 				
-				cRepo.save(c.getCart());
 			}
+			
+			cRepo.save(c.getCart());
 		}
+		
+		CartProductQuantity cpq;
+		
+		if(cpqRepo.findByCartIdAndProductId(c.getCart().getCartId(), dto.getProductId()) != null) {
+			cpq = cpqRepo.findByCartIdAndProductId(c.getCart().getCartId(), dto.getProductId());
 			
-			
-		CartProductQuantity cpq = new CartProductQuantity();
+		} else {
+			cpq = new CartProductQuantity();
+		
+		}
+		
 		cpq.setCartId(c.getCart().getCartId());
 		cpq.setProductId(dto.getProductId());
-		cpq.setProductQuantity(dto.getQuantity());
+		cpq.setProductQuantity(dto.getQuantity());		
 	
 		cpqRepo.save(cpq);
 		
@@ -205,9 +214,10 @@ public class CartServiceImpl implements CartService {
 			} else {
 								
 				Product deleteProduct =  c.getCart().getProducts().stream()
-														                       .filter(p -> p.getProductId() == productId)
-														                       .collect(Collectors.toList())
-														                       .get(0);
+												    .filter(p -> p.getProductId() == productId)
+												    .collect(Collectors.toList())
+												    .get(0);
+				
 				c.getCart().getProducts().remove(deleteProduct);
 				cRepo.save(c.getCart());
 				cpqRepo.delete(cpq);
@@ -248,9 +258,9 @@ public class CartServiceImpl implements CartService {
 		if(c.getCart().getProducts().stream().anyMatch(p1 -> p1.getProductId() == productId)) {
 			
 			Product deleteProduct =  c.getCart().getProducts().stream()
-																		   .filter(p -> p.getProductId() == productId)
-																		   .collect(Collectors.toList())
-																		   .get(0);
+															  .filter(p -> p.getProductId() == productId)
+															  .collect(Collectors.toList())
+															  .get(0);
 			
 			c.getCart().getProducts().remove(deleteProduct);
 			op.get().setStockQuantity(op.get().getStockQuantity() + cpq.getProductQuantity());

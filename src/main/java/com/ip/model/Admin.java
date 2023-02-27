@@ -1,15 +1,19 @@
 package com.ip.model;
 
-import javax.persistence.Entity;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
-
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,5 +45,8 @@ public class Admin extends User{
 	@Pattern(regexp = "[6789]{1}[0-9]{9}",message = "Invalid Mobile Number.")
 	@Column(name = "Mobile")
 	private String adminMobile;
+	
+	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "admin")
+	private List<Report> reports = new ArrayList<>();
 
 }

@@ -1,9 +1,13 @@
 package com.ip.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -52,5 +56,9 @@ public class Customer extends User{
 	@JsonIgnore
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
 	private Cart cart;
+	
+	@JsonIgnore
+	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
+	private List<FeedBack> feedBack = new ArrayList<>();
 
 }

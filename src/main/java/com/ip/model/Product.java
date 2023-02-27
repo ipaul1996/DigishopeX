@@ -11,9 +11,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -78,7 +80,7 @@ public class Product {
 	
 	
 	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name = "CategoryId" )
+	@JoinColumn(name = "CategoryID" )
 	Category category;
 	
 	@Column(name = "StockQuantity")
@@ -87,6 +89,14 @@ public class Product {
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
 	private List<Cart> cartList = new ArrayList<>();
+	
+	@JsonIgnore
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "product")
+	private OrderDetail detail;
+	
+	@JsonIgnore
+	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "product")
+	private List<FeedBack> feedBack = new ArrayList<>();
 	
 
 }

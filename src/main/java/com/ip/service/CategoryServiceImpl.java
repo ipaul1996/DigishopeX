@@ -49,6 +49,10 @@ public class CategoryServiceImpl implements CategoryService{
 			throw new CategoryException("Category id is auto generated, you need not provide it explicitly...");
 		}
 		
+		if(cRepo.findByCategoryName(formatString(category.getCategoryName())) != null) {
+			throw new CategoryException("Category already exists");
+		}
+		
 		category.setCategoryName(formatString(category.getCategoryName()));
 	    
 	    return cRepo.save(category);
