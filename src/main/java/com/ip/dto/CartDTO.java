@@ -13,8 +13,6 @@ import lombok.ToString;
 @ToString
 public class CartDTO {
 	
-	private Integer customerId;
-	
 	private Integer productId;
 	
 	private Integer quantity;

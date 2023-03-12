@@ -1,15 +1,16 @@
 package com.ip.service;
 
+import com.ip.dto.AdminDTO;
+import com.ip.dto.AdminDTOV2;
 import com.ip.exception.AdminException;
-import com.ip.exception.CredentialException;
 import com.ip.model.Admin;
 
 public interface AdminService {
 	
-	public Admin createAdmin(Admin admin) throws AdminException;
+	public Admin createAdmin(AdminDTO dto) throws AdminException;
 	
-	public Admin updateAdmin(Admin admin, String token) throws AdminException, CredentialException;
+	public Admin updateAdmin(AdminDTOV2 dto) throws AdminException ;
 	
-	public Admin deleteAdmin(Integer adminId, String token) throws AdminException, CredentialException;
+	public Admin deleteAdmin() throws AdminException ;
 
 }

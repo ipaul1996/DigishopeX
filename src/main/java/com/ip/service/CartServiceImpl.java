@@ -1,17 +1,20 @@
 package com.ip.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.ip.dto.CartDTO;
 import com.ip.dto.CartDTOV2;
 import com.ip.dto.CartDTOV3;
-import com.ip.enums.UserType;
 import com.ip.exception.CredentialException;
 import com.ip.exception.CustomerException;
 import com.ip.exception.ProductException;
@@ -19,22 +22,17 @@ import com.ip.model.Cart;
 import com.ip.model.CartProductQuantity;
 import com.ip.model.Customer;
 import com.ip.model.Product;
-import com.ip.model.UserSession;
 import com.ip.repository.CartProductQuantityRepo;
 import com.ip.repository.CartRepo;
 import com.ip.repository.CustomerRepo;
 import com.ip.repository.ProductRepo;
-import com.ip.repository.SessionRepo;
 
 @Service
 public class CartServiceImpl implements CartService {
 	
 	@Autowired
 	private CartRepo cRepo;
-	
-	@Autowired
-	private SessionRepo sRepo;
-	
+		
 	@Autowired
 	private ProductRepo pRepo;
 		
@@ -46,21 +44,15 @@ public class CartServiceImpl implements CartService {
 
 	
 	@Override
-	public String addToCart(CartDTO dto, String token) throws CredentialException, CustomerException, ProductException {
+	public String addToCart(CartDTO dto) throws CustomerException, ProductException {
 		
-		UserSession userSession = sRepo.findByToken(token);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
-		if(userSession == null || userSession.getUserType() == UserType.ADMIN) {
-			throw new CredentialException("Please login as a customer");
+		
+		if(dto.getProductId() == null || dto.getQuantity() == null || dto.getQuantity() == 0) {
+			throw new CustomerException("No field of CartDTO should be null or 0");
 		}
-		
-		if(dto.getProductId() == null || dto.getCustomerId() == null || dto.getQuantity() == null || dto.getQuantity() == 0) {
-			throw new CustomerException("No field of CartDto should be null or 0");
-		}
-		
-		if(dto.getCustomerId() != userSession.getUserid()) {
-			throw new CustomerException("Invalid customer id");
-		}
+	
 		
 		Optional<Product> op =  pRepo.findById(dto.getProductId());
 		
@@ -77,7 +69,7 @@ public class CartServiceImpl implements CartService {
 		}
 		
 		Product p = op.get();		
-		Customer c =  custRepo.findById(dto.getCustomerId()).get();
+		Customer c =  custRepo.findByEmail(auth.getName()).get();
 		
 		if(c.getCart() == null) {
 			
@@ -132,17 +124,9 @@ public class CartServiceImpl implements CartService {
 
 	
 	@Override
-	public String increaseProductQuantity(Integer productId, Integer customerId, String token) throws CredentialException, CustomerException, ProductException {
+	public String increaseProductQuantity(Integer productId) throws ProductException {
 		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null || userSession.getUserType() == UserType.ADMIN) {
-			throw new CredentialException("Please login as a customer");
-		}
-		
-		if(customerId != userSession.getUserid()) {
-			throw new CustomerException("Invalid customer id");
-		}
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		Optional<Product> op = pRepo.findById(productId);
 		
@@ -154,7 +138,7 @@ public class CartServiceImpl implements CartService {
 			throw new ProductException("Product is out of stock");
 		}
 		
-		Customer c =  custRepo.findById(customerId).get();
+		Customer c =  custRepo.findByEmail(auth.getName()).get();
 		
 		if(c.getCart() == null) {
 			throw new ProductException("No product found in the cart");
@@ -177,17 +161,9 @@ public class CartServiceImpl implements CartService {
 	
 	
 	@Override
-	public String decreaseProductQuantity(Integer productId, Integer customerId, String token) throws CredentialException, CustomerException, ProductException {
+	public String decreaseProductQuantity(Integer productId) throws ProductException {
 		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null || userSession.getUserType() == UserType.ADMIN) {
-			throw new CredentialException("Please login as a customer");
-		}
-		
-		if(customerId != userSession.getUserid()) {
-			throw new CustomerException("Invalid customer id");
-		}
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		Optional<Product> op = pRepo.findById(productId);
 		
@@ -195,7 +171,7 @@ public class CartServiceImpl implements CartService {
 			throw new ProductException("Invalid product id");
 		}
 		
-		Customer c =  custRepo.findById(customerId).get();
+		Customer c =  custRepo.findByEmail(auth.getName()).get();
 		
 		if(c.getCart() == null) {
 			throw new ProductException("No product found in the cart");
@@ -233,17 +209,9 @@ public class CartServiceImpl implements CartService {
 
 	
 	@Override
-	public CartDTOV2 deleteFromCart(Integer productId, Integer customerId, String token) throws CredentialException, CustomerException, ProductException {
+	public CartDTOV2 deleteFromCart(Integer productId) throws ProductException {
 		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null || userSession.getUserType() == UserType.ADMIN) {
-			throw new CredentialException("Please login as a customer");
-		}
-		
-		if(customerId != userSession.getUserid()) {
-			throw new CustomerException("Invalid customer id");
-		}
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		Optional<Product> op = pRepo.findById(productId);
 		
@@ -251,7 +219,7 @@ public class CartServiceImpl implements CartService {
 			throw new ProductException("Invalid product id");
 		}
 		
-		Customer c = custRepo.findById(customerId).get();
+		Customer c = custRepo.findByEmail(auth.getName()).get();
 		
 		CartProductQuantity cpq = cpqRepo.findByCartIdAndProductId(c.getCart().getCartId(), productId);	
 		
@@ -286,19 +254,18 @@ public class CartServiceImpl implements CartService {
 
 	
 	@Override
-	public CartDTOV3 showCart(Integer customerId, String token) throws CredentialException, CustomerException, ProductException {
+	public CartDTOV3 showCart(String email) throws ProductException, CredentialException {
 		
-		UserSession userSession = sRepo.findByToken(token);
+		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
 		
-		if(userSession == null || userSession.getUserType() == UserType.ADMIN) {
-			throw new CredentialException("Please login as a customer");
+		String role = getRole(auth.getAuthorities());
+		
+		if(role.equals("ROLE_CUSTOMER") && !auth.getName().equals(email)) {	
+			throw new CredentialException("You don't have authority to perform this action");
+			
 		}
 		
-		if(customerId != userSession.getUserid()) {
-			throw new CustomerException("Invalid customer id");
-		}
-		
-		Customer c = custRepo.findById(customerId).get();
+		Customer c = custRepo.findByEmail(email).get();
 		
 		if(c.getCart() == null) {
 			throw new ProductException("No product found in the cart");
@@ -335,6 +302,13 @@ public class CartServiceImpl implements CartService {
 		cv3.setSubtotal(priceList.stream().reduce(0.0, (s, e) -> s + e));
 		
 		return cv3;
+	}
+	
+	
+	private String getRole(Collection<? extends GrantedAuthority> authorities) {
+		
+		return new ArrayList<>(authorities).get(0).toString();
+
 	}
 
 }

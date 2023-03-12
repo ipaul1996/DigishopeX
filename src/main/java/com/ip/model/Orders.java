@@ -1,21 +1,24 @@
 package com.ip.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ip.enums.OrderStatus;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,11 +39,11 @@ public class Orders {
 	private Integer orderID;
 	
 	@JsonIgnore
-	private LocalDateTime orderDateTime = LocalDateTime.now();
+	private LocalDate orderDate = LocalDate.now();
 	
-	private LocalDateTime shipDateTime;
+	private LocalDate shipDate;
 	
-	private LocalDateTime deliveryDateTime;
+	private LocalDate deliveryDate;
 	
 	@NotNull(message = "total_order_amount should not be null")
 	private Double total_order_amount;
@@ -49,7 +52,7 @@ public class Orders {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
 	private List<OrderDetail> details = new ArrayList<>();
 	
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "shipperID")
 	private Shipper shipper;
 	
@@ -58,7 +61,12 @@ public class Orders {
 	private Payment payment;
 	
 	@JsonIgnore
-	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "order")
-	private TrackOrder trackOrder;
+	@Enumerated(EnumType.STRING)
+	private OrderStatus orderStatus;
+	
+	
+	@ManyToOne(cascade = { CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
+	@JoinColumn(name = "customerID")
+	private Customer customer;
 
 }

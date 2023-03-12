@@ -6,22 +6,16 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ip.enums.UserType;
 import com.ip.exception.CategoryException;
-import com.ip.exception.CredentialException;
 import com.ip.model.Category;
-import com.ip.model.UserSession;
+import com.ip.model.Product;
 import com.ip.repository.CategoryRepo;
-import com.ip.repository.SessionRepo;
 
 
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
 
-	@Autowired
-	SessionRepo sRepo;
-	
 	@Autowired
 	CategoryRepo cRepo;
 	
@@ -37,13 +31,9 @@ public class CategoryServiceImpl implements CategoryService{
 
 	
 	@Override
-	public Category addCategory(Category category, String token) throws CredentialException, CategoryException {
+	public Category addCategory(Category category) throws CategoryException {
 		
-		UserSession userSession = sRepo.findByToken(token);
 		
-		if(userSession == null || userSession.getUserType() == UserType.CUSTOMER) {
-			throw new CredentialException("Please login as an admin");
-		}
 		
 		if(category.getCategoryId() != null) {
 			throw new CategoryException("Category id is auto generated, you need not provide it explicitly...");
@@ -61,13 +51,8 @@ public class CategoryServiceImpl implements CategoryService{
 
 	
 	@Override
-	public Category updateCategory(Category category, String token) throws CategoryException, CredentialException {
+	public Category updateCategory(Category category) throws CategoryException {
 		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null || userSession.getUserType() == UserType.CUSTOMER) {
-			throw new CredentialException("Please login as an admin");
-		}
 		
 		if(category.getCategoryId() == null) {
 			throw new CategoryException("You need to provide correct category id to pergform this action ");
@@ -96,19 +81,19 @@ public class CategoryServiceImpl implements CategoryService{
 
 	
 	@Override
-	public Category deleteCategory(Integer categoryId, String token) throws CategoryException, CredentialException {
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null || userSession.getUserType() == UserType.CUSTOMER) {
-			throw new CredentialException("Please login as an admin");
-		}
+	public Category deleteCategory(Integer categoryId) throws CategoryException {
 		
 	    Optional<Category> op =  cRepo.findById(categoryId);
 	    
 	    if(op.isEmpty()) {
 	    	throw new CategoryException("Invalid category id");
 	    }
+	    
+	    List<Product> products = op.get().getProducts();
+	    
+	    products.stream().forEach(e -> e.setCategory(null));
+	    
+	    products.clear();
 	    
 	    cRepo.delete(op.get());
 	    

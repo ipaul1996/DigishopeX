@@ -3,8 +3,6 @@ package com.ip.controller;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ip.dto.CartDTO;
 import com.ip.dto.CartDTOV2;
 import com.ip.dto.CartDTOV3;
-import com.ip.dto.CategoryPriceDTO;
-import com.ip.dto.ProductDTO;
-import com.ip.dto.ProductDTOV2;
+import com.ip.dto.CustomerDTO;
+import com.ip.dto.CustomerDTOV2;
 import com.ip.exception.CategoryException;
 import com.ip.exception.CredentialException;
 import com.ip.exception.CustomerException;
@@ -36,6 +33,8 @@ import com.ip.service.CartService;
 import com.ip.service.CategoryService;
 import com.ip.service.CustomerService;
 import com.ip.service.ProductService;
+
+import jakarta.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/customer")
@@ -57,22 +56,20 @@ public class CustomerController {
 	/*   ********************************************************Customer **************************************************************   */
 	
 	@PostMapping("/create")
-	public ResponseEntity<Customer>  createCustomerHandler(@Validated @RequestBody Customer customer) throws CustomerException {
-		return new ResponseEntity<Customer>(custService.createCustomer(customer), HttpStatus.CREATED);
+	public ResponseEntity<Customer>  createCustomerHandler(@Validated @RequestBody CustomerDTO dto) throws CustomerException {
+		return new ResponseEntity<Customer>(custService.createCustomer(dto), HttpStatus.CREATED);
 	}
 	
 	
 	@PutMapping("/update")
-	public ResponseEntity<Customer>  updateCustomerHandler(@RequestBody Customer customer, 
-																			@RequestParam("token") String token) throws CustomerException, CredentialException {
-		return new ResponseEntity<Customer>(custService.updateCustomer(customer, token), HttpStatus.ACCEPTED);
+	public ResponseEntity<Customer>  updateCustomerHandler(@Validated @RequestBody CustomerDTOV2 dto) throws CustomerException {
+		return new ResponseEntity<Customer>(custService.updateCustomer(dto), HttpStatus.ACCEPTED);
 	}
 	
 	
-	@DeleteMapping("/delete/{cid}")
-	public ResponseEntity<Customer>  deleteCustomerHandler(@PathVariable("cid") Integer customerId, 
-																			@RequestParam("token") String token) throws CustomerException, CredentialException {
-		return new ResponseEntity<Customer>(custService.deleteCustomer(customerId, token), HttpStatus.OK);
+	@DeleteMapping("/delete/{email}")
+	public ResponseEntity<Customer>  deleteCustomerHandler(@PathVariable("email") String email) throws CustomerException, CredentialException {
+		return new ResponseEntity<Customer>(custService.deleteCustomer(email), HttpStatus.OK);
 	}
 	
 	
@@ -149,13 +146,13 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/products/rate/{pid}/{ratings}")
-	public ResponseEntity<Product> rateAProductHandler(@PathVariable("pid") @NotNull Integer productId, @PathVariable("ratings") @NotNull Integer ratings, @RequestParam("token") String token) throws CredentialException, ProductException {
-		return new ResponseEntity<Product>(pService.rateAProduct(productId, ratings, token), HttpStatus.OK);
+	public ResponseEntity<Product> rateAProductHandler(@PathVariable("pid") @NotNull Integer productId, @PathVariable("ratings") @NotNull Integer ratings) throws ProductException {
+		return new ResponseEntity<Product>(pService.rateAProduct(productId, ratings), HttpStatus.OK);
 	}
 	
 	@PutMapping("/products/editratings/{pid}/{ratings}")
-	public ResponseEntity<Product> editRatingsOfAProductHandler(@PathVariable("pid") @NotNull Integer productId, @PathVariable("ratings") @NotNull Integer ratings, @RequestParam("token") String token) throws CredentialException, ProductException {
-		return new ResponseEntity<Product>(pService.editRatingsOfAProduct(productId, ratings, token), HttpStatus.OK);
+	public ResponseEntity<Product> editRatingsOfAProductHandler(@PathVariable("pid") @NotNull Integer productId, @PathVariable("ratings") @NotNull Integer ratings) throws ProductException {
+		return new ResponseEntity<Product>(pService.editRatingsOfAProduct(productId, ratings), HttpStatus.OK);
 	}
 	
 	
@@ -164,28 +161,28 @@ public class CustomerController {
 	
 	
    @PostMapping("/cart/addproduct")
-	public ResponseEntity<String> addToCartHandler(@RequestBody CartDTO dto, @RequestParam("token") String token) throws CredentialException, CustomerException, ProductException {
-		return new ResponseEntity<String>(cartService.addToCart(dto, token), HttpStatus.CREATED);
+	public ResponseEntity<String> addToCartHandler(@RequestBody CartDTO dto) throws CustomerException, ProductException {
+		return new ResponseEntity<String>(cartService.addToCart(dto), HttpStatus.CREATED);
 	}
    
    @PutMapping("/cart/increasequantity/{pid}/{cid}")
-   public ResponseEntity<String> increaseProductQuantityHandler(@PathVariable("pid") @NotNull Integer productId, @PathVariable("cid") @NotNull Integer customerId, @RequestParam("token") String token) throws CredentialException, CustomerException, ProductException {
-	   return new ResponseEntity<String>(cartService.increaseProductQuantity(productId, customerId, token), HttpStatus.ACCEPTED);
+   public ResponseEntity<String> increaseProductQuantityHandler(@PathVariable("pid") @NotNull Integer productId) throws CustomerException, ProductException {
+	   return new ResponseEntity<String>(cartService.increaseProductQuantity(productId), HttpStatus.ACCEPTED);
    }
    
    @PutMapping("/cart/decreasequantity/{pid}/{cid}")
-   public ResponseEntity<String> decreaseProductQuantityHandler(@PathVariable("pid") @NotNull Integer productId, @PathVariable("cid") @NotNull Integer customerId, @RequestParam("token") String token) throws CredentialException, CustomerException, ProductException {
-	   return new ResponseEntity<String>(cartService.decreaseProductQuantity(productId, customerId, token), HttpStatus.ACCEPTED);
+   public ResponseEntity<String> decreaseProductQuantityHandler(@PathVariable("pid") @NotNull Integer productId) throws CustomerException, ProductException {
+	   return new ResponseEntity<String>(cartService.decreaseProductQuantity(productId), HttpStatus.ACCEPTED);
    }
 	
    @DeleteMapping("/cart/deleteproduct/{pid}/{cid}")
-   public ResponseEntity<CartDTOV2> deleteFromCartHandler(@PathVariable("pid") @NotNull Integer productId, @PathVariable("cid") @NotNull Integer customerId, @RequestParam("token") String token) throws CredentialException, CustomerException, ProductException {
-	   return new ResponseEntity<CartDTOV2>(cartService.deleteFromCart(productId, customerId, token), HttpStatus.OK);
+   public ResponseEntity<CartDTOV2> deleteFromCartHandler(@PathVariable("pid") @NotNull Integer productId) throws CustomerException, ProductException {
+	   return new ResponseEntity<CartDTOV2>(cartService.deleteFromCart(productId), HttpStatus.OK);
    }
 	
-   @GetMapping("/cart/getallproducts/{custid}")
-   public ResponseEntity<CartDTOV3> showCartHandler(@PathVariable("custid") @NotNull Integer customerId, @RequestParam("token") String token) throws CredentialException, CustomerException, ProductException {
-	   return new ResponseEntity<CartDTOV3>(cartService.showCart(customerId, token), HttpStatus.OK);
+   @GetMapping("/cart/getallproducts/{email}")
+   public ResponseEntity<CartDTOV3> showCartHandler(@PathVariable("email") @NotNull String email) throws CustomerException, ProductException, CredentialException {
+	   return new ResponseEntity<CartDTOV3>(cartService.showCart(email), HttpStatus.OK);
    }
 
 }

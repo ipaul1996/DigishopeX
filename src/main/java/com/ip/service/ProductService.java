@@ -15,39 +15,39 @@ import com.ip.model.Product;
 
 public interface ProductService {
 	
-	public Product createProduct(ProductDTO pdto, String token) throws CredentialException, CategoryException,  ProductException;
+	public Product createProduct(ProductDTO pdto) throws CategoryException, ProductException;
 	
-	public Product addExistingProduct(ProductDTOV2 pdto, String token) throws CredentialException, ProductException;
+	public Product addExistingProduct(ProductDTOV2 pdto) throws ProductException;
 	
-	public Product updateProduct(ProductDTO pdto, String token) throws CredentialException, ProductException, CategoryException;
+	public Product updateProduct(ProductDTO pdto) throws ProductException, CategoryException;
 	
-	public Product deleteProduct(Integer productid, String token) throws CredentialException, ProductException;
+	public Product deleteProduct(Integer productid) throws ProductException;
 	
-	public Product getProductByProductId(Integer productId) throws CredentialException, ProductException;
+	public Product getProductByProductId(Integer productId) throws ProductException;
 	
-	public List<Product> getProductsByCategoryId(Integer categoryId) throws CredentialException, ProductException, CategoryException;
+	public List<Product> getProductsByCategoryId(Integer categoryId) throws ProductException, CategoryException;
 
-	public List<Product> getProductsByCategoryName(String categoryName) throws CredentialException, ProductException, CategoryException;
+	public List<Product> getProductsByCategoryName(String categoryName) throws ProductException, CategoryException;
 	
-	public Map<Category, List<Product>> getAllProductsCategorywise() throws CredentialException, ProductException, CategoryException;
+	public Map<Category, List<Product>> getAllProductsCategorywise() throws ProductException, CategoryException;
 		
-	public List<Product> sortProductsByNameAscendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByNameAscendingForACategory(Integer categoryId) throws ProductException, CategoryException;
 	
-	public List<Product> sortProductsByNameDescendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByNameDescendingForACategory(Integer categoryId) throws ProductException, CategoryException;
 	
-	public List<Product> sortProductsByPriceAscendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByPriceAscendingForACategory(Integer categoryId) throws ProductException, CategoryException;
 	
-	public List<Product> sortProductsByPriceDescendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByPriceDescendingForACategory(Integer categoryId) throws ProductException, CategoryException;
 
-	public List<Product> sortProductsByRatingsAscendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByRatingsAscendingForACategory(Integer categoryId) throws ProductException, CategoryException;
 	
-	public List<Product> sortProductsByRatingsDescendingForACategory(Integer categoryId) throws CredentialException, ProductException, CategoryException;
+	public List<Product> sortProductsByRatingsDescendingForACategory(Integer categoryId) throws ProductException, CategoryException;
 
-    public List<Product> filterProductsByRatingsForACategory(Integer categoryId, Integer minRatings, Integer maxRatings) throws CredentialException, ProductException, CategoryException;
+    public List<Product> filterProductsByRatingsForACategory(Integer categoryId, Integer minRatings, Integer maxRatings) throws ProductException, CategoryException;
 	
-	public List<Product> filterProductsByPriceForACategory(Integer categoryId, Double minPrice, Double maxPrice) throws CredentialException, ProductException, CategoryException;
+	public List<Product> filterProductsByPriceForACategory(Integer categoryId, Double minPrice, Double maxPrice) throws ProductException, CategoryException;
 
-	public Product rateAProduct(Integer productId, Integer ratings, String token) throws CredentialException, ProductException;
+	public Product rateAProduct(Integer productId, Integer ratings) throws ProductException;
 	
-	public Product editRatingsOfAProduct(Integer productId, Integer ratings, String token) throws CredentialException, ProductException;
+	public Product editRatingsOfAProduct(Integer productId, Integer ratings) throws ProductException;
 }

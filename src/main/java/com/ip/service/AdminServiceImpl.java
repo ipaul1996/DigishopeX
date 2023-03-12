@@ -3,16 +3,16 @@ package com.ip.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.ip.enums.UserType;
+import com.ip.dto.AdminDTO;
+import com.ip.dto.AdminDTOV2;
+import com.ip.enums.UserRole;
 import com.ip.exception.AdminException;
-import com.ip.exception.CredentialException;
-import com.ip.exception.CustomerException;
 import com.ip.model.Admin;
-import com.ip.model.UserSession;
 import com.ip.repository.AdminRepo;
-import com.ip.repository.SessionRepo;
 
 @Service
 public class AdminServiceImpl implements AdminService{
@@ -21,60 +21,52 @@ public class AdminServiceImpl implements AdminService{
 	private AdminRepo aRepo;
 	
 	@Autowired
-	private SessionRepo sRepo;
+	private PasswordEncoder pEncoder;
 
 	@Override
-	public Admin createAdmin(Admin admin) throws AdminException {
+	public Admin createAdmin(AdminDTO dto) throws AdminException {
 		
-		if(admin.getUserid() != null) {
-			throw new AdminException("Id is auto generated, no need to provide it explicitly");
+		Admin admin = new Admin();
+		
+		admin.setAdminName(dto.getAdminName());
+		admin.setEmail(dto.getAdminEmail());
+		admin.setAdminMobile(dto.getAdminMobile());	
+		admin.setPassword(pEncoder.encode(dto.getPassword()));
+		
+		if(!dto.getRole().toUpperCase().equals("ADMIN")) {
+			throw new AdminException("Role should be admin");
 		}
+		
+		admin.setRole(UserRole.ROLE_ADMIN);
+	
+		
 		return aRepo.save(admin);	
 	}
 
 	
 	@Override
-	public Admin updateAdmin(Admin admin, String token) throws AdminException, CredentialException {
+	public Admin updateAdmin(AdminDTOV2 dto) throws AdminException {
 		
-		if(admin.getUserid() == null) {
-			throw new AdminException("Please provide admin id");
-		}
+		  
+		String adminEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 		
-		Optional<Admin> op = aRepo.findById(admin.getUserid());
+		Optional<Admin> op = aRepo.findByEmail(adminEmail);
 		
 		if(op.isEmpty()) {
-			throw new AdminException("Invalid id...");
-		}
-		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null || userSession.getUserType() == UserType.CUSTOMER) {
-			throw new CredentialException("Please login as an admin");
-		}
-		
-		if(userSession.getUserid() != admin.getUserid()) {
-			throw new AdminException("You are not authorized to perform this action...");
+			throw new AdminException("Admin details not found");
 		}
 		
 		
-		if(admin.getUserType() == UserType.CUSTOMER ) {
-			throw new AdminException("Invalid user type");
+		if(dto.getAdminMobile() != null) {
+			op.get().setAdminMobile(dto.getAdminMobile());
 		}
 		
-		if(admin.getAdminEmail() != null) {
-			op.get().setAdminEmail(admin.getAdminEmail());
+		if(dto.getAdminName() != null) {
+			op.get().setAdminName(dto.getAdminName());
 		}
 		
-		if(admin.getAdminMobile() != null) {
-			op.get().setAdminMobile(admin.getAdminMobile());
-		}
-		
-		if(admin.getAdminName() != null) {
-			op.get().setAdminName(admin.getAdminName());
-		}
-		
-		if(admin.getPassword() != null) {
-			op.get().setPassword(admin.getPassword());
+		if(dto.getPassword() != null) {
+			op.get().setPassword(pEncoder.encode(dto.getPassword()));
 		}
 		
 		return aRepo.save(op.get());
@@ -83,25 +75,16 @@ public class AdminServiceImpl implements AdminService{
 
 	
 	@Override
-	public Admin deleteAdmin(Integer adminId, String token) throws AdminException, CredentialException {
+	public Admin deleteAdmin() throws AdminException {
 		
-		Optional<Admin> op = aRepo.findById(adminId);
+		String adminEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		
+		Optional<Admin> op = aRepo.findByEmail(adminEmail);
 		
 		if(op.isEmpty()) {
-			throw new AdminException("Invalid id...");
+			throw new AdminException("No details found...");
 		}
 		
-		UserSession userSession = sRepo.findByToken(token);
-		
-		if(userSession == null || userSession.getUserType() == UserType.CUSTOMER) {
-			throw new CredentialException("Please login as an admin");
-		}
-		
-		if(userSession.getUserid() != adminId) {
-			throw new AdminException("You are not authorized to perform this action...");
-		}
-		
-		sRepo.delete(userSession);
 		aRepo.delete(op.get());
 				
 		return op.get();

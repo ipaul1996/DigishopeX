@@ -3,21 +3,20 @@ package com.ip.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,13 +39,10 @@ public class Customer extends User{
 	@Column(name = "Name")
 	private String customerName;
 	
-	@Email
-	@Column(unique = true, name = "Email")
-	private String customerEmail;
-	
+
 	
 	@NotNull(message = "Mobile Number cannot be null.")
-	@Pattern(regexp = "[6789]{1}[0-9]{9}",message = "Invalid Mobile Number.")
+	@Pattern(regexp = "[6789]{1}[0-9]{9}", message = "Invalid Mobile Number.")
 	@Column(name = "Mobile")
 	private String customerMobile;
 	
@@ -60,5 +56,9 @@ public class Customer extends User{
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
 	private List<FeedBack> feedBack = new ArrayList<>();
+	
+	@JsonIgnore
+	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
+	private List<Orders> orders = new ArrayList<>();
 
 }

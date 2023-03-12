@@ -1,18 +1,18 @@
 package com.ip.model;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ip.enums.UserRole;
 
-import com.ip.enums.UserType;
-
-
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @MappedSuperclass
 public abstract class User {
 	
@@ -31,13 +30,15 @@ public abstract class User {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer userid;
 	
-	@NotNull(message = "User type Can't be null.")
+	@NotNull(message = "User role Can't be null.")
 	@Enumerated(EnumType.STRING)
-	private UserType userType;
+	private UserRole role;
 	
-	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$",
-			message = "Password must contain 8 characters and should have atleast 1 Upper Case, 1 Small Case, 1 Number and 1 Special Character")
-	@Column(name = "PASSWORD")
+	@Email
+	@Column(unique = true)
+	private String email;
+	
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 	
 

@@ -1,6 +1,6 @@
 package com.ip.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.ip.model.OrderDetail;
@@ -26,7 +26,7 @@ public class OrderDTO {
 	
 	private Double total_order_amount;
 	
-	private LocalDateTime orderDateTime;
+	private LocalDate orderDate;
 	
 	
 

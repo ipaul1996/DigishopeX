@@ -11,14 +11,14 @@ import com.ip.exception.ProductException;
 
 public interface CartService {
 	
-	public String addToCart(CartDTO dto, String token) throws CredentialException, CustomerException, ProductException;
+	public String addToCart(CartDTO dto) throws CustomerException, ProductException;
 	
-	public String increaseProductQuantity(Integer productId, Integer customerId, String token) throws CredentialException, CustomerException, ProductException;
+	public String increaseProductQuantity(Integer productId) throws ProductException;
 	
-	public String decreaseProductQuantity(Integer productId, Integer customerId, String token) throws CredentialException, CustomerException, ProductException;
+	public String decreaseProductQuantity(Integer productId) throws ProductException;
 	
-	public CartDTOV2 deleteFromCart(Integer productId, Integer customerId, String token) throws CredentialException, CustomerException, ProductException;
+	public CartDTOV2 deleteFromCart(Integer productId) throws ProductException;
 	
-	public CartDTOV3 showCart(Integer customerId, String token) throws CredentialException, CustomerException, ProductException;
+	public CartDTOV3 showCart(String email) throws ProductException, CredentialException ;
 
 }
