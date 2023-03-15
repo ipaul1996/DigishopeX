@@ -1,69 +1,66 @@
 package com.ip.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
+import com.ip.dto.CancelledDTO;
 import com.ip.dto.OrderDTO;
-import com.ip.exception.AdminException;
+import com.ip.dto.ReturnRequestDTO;
 import com.ip.exception.CredentialException;
 import com.ip.exception.CustomerException;
-import com.ip.exception.OrderDetailException;
 import com.ip.exception.OrderException;
 import com.ip.exception.ProductException;
 import com.ip.exception.ShipperException;
 import com.ip.exception.SupplierException;
-import com.ip.model.OrderDetail;
 import com.ip.model.Orders;
 import com.ip.model.Payment;
+import com.ip.model.Shipper;
+import com.ip.model.Supplier;
 
 public interface OrderService {
 	
-	public OrderDTO makePurchase(Payment payment) throws ProductException, CustomerException, CredentialException;
+	public Supplier registerSupplier(Supplier supplier) throws SupplierException;
+	
+	
+	public String changeActiveStatusOfSupplier(Integer supplierID) throws SupplierException;
+	
+	
+	public Shipper registerShipper(Shipper shipper) throws ShipperException;
+	
+	
+	public String changeActiveStatusOfShipper(Integer shipperID) throws ShipperException;
+	
+	
+	public OrderDTO makePurchase(Payment payment) throws SupplierException, ProductException, CustomerException, CredentialException;
 
 	
-	public String cancelOrder(Integer orderID) throws OrderException;
+	public CancelledDTO cancelOrder(Integer orderID) throws OrderException;
 	
 	
-	public String returnProducts(String token, Integer orderID) throws CredentialException, OrderException;
+	public ReturnRequestDTO submitReturnRequest(Integer orderID) throws OrderException;
 	
 	
-	public String makeRefundRequest(String token, Integer orderID) throws CredentialException, OrderException;
-	
-	
-	public String refund(String token, Integer orderID) throws CredentialException, OrderException;
-	
-	
-	public OrderDetail assignSupplier(Integer supplierID, Integer orderID, Integer productID) throws SupplierException, OrderDetailException, AdminException;
-	
-	
-	public Orders assignShipper(Integer shipperID, Integer orderID) throws OrderException, ShipperException;
-
-	
-	public Orders assignShipDate(Integer orderID, LocalDate shipDate) throws OrderException, ShipperException;
+	public void updateStock();
 
 
-	public Orders assignDeliveryDate(Integer orderID, LocalDate deliveryDate) throws OrderException, ShipperException;
-
-
-	public String updateOrderStatus(Integer orderID) throws OrderException;
+	public void updateOrderStatus();
 	
 	
 	public String checkOrderStatus(Integer orderID) throws OrderException;
 
 
-	public List<Orders> getAllOrdersForCustomer(String token) throws CredentialException, OrderException;
+	public List<Orders> getAllOrdersForCustomer() throws CustomerException, OrderException;
 	
 	
-	public List<Orders> getAllOrdersForAdmin(String token) throws CredentialException, OrderException;
+	public List<Orders> getAllOrdersForAdmin() throws OrderException;
 	
 
-	public Orders getOrderByOrderID(String token, Integer orderID) throws CredentialException, OrderException;
+	public Orders getOrderByOrderID(Integer orderID) throws OrderException;
 
 
-	public List<Orders> getAllOrdersByCustomerID(String token, Integer customerID) throws CredentialException, OrderException, CustomerException;
+	public List<Orders> getAllOrdersByCustomerID(Integer customerID) throws OrderException, CustomerException;
 
 
-	public List<Orders> getAllOrdersByCustomerEmail(String token, String email) throws CredentialException, OrderException, CustomerException;
+	public List<Orders> getAllOrdersByCustomerEmail(String email) throws CredentialException, OrderException, CustomerException;
 
 
 	

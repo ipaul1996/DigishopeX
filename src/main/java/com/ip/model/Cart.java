@@ -29,9 +29,11 @@ public class Cart {
 	@GeneratedValue(strategy =  GenerationType.AUTO)
 	private Integer cartId;
 	
+    //Bidirectional
 	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH})
 	private Customer customer;
 	
+	//Bidirectional
 	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH})
 	private List<Product> products = new ArrayList<>();
 	

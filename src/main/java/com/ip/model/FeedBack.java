@@ -43,10 +43,14 @@ public class FeedBack {
 	@JsonIgnore
 	private LocalDateTime feedBack_Date_Time = LocalDateTime.now();
 	
+	
+	//Bidirectional
 	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "customerid")
 	private Customer customer;
 	
+	
+	//Bidirectional
 	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "productid")
 	private Product product;

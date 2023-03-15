@@ -49,14 +49,17 @@ public class Customer extends User{
 	@Embedded
 	private Address address;
 	
+	//Bidirectional
 	@JsonIgnore
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "customer")
 	private Cart cart;
 	
+	//Bidirectional
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
 	private List<FeedBack> feedBack = new ArrayList<>();
 	
+	//Bidirectional
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
 	private List<Orders> orders = new ArrayList<>();

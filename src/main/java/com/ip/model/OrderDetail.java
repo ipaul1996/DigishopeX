@@ -41,12 +41,13 @@ public class OrderDetail {
 	@JoinColumn(name = "orderID")
 	private Orders order;
 	
-	
+	//Bidirectional
 	@OneToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "productID")
 	private Product product;
 	
 	
+	//Bidirectional
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "supplierID")
 	private Supplier supplier;

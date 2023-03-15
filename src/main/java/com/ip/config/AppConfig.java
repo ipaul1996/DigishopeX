@@ -30,8 +30,6 @@ public class AppConfig {
 	@Bean
 	SecurityFilterChain securityConfig(HttpSecurity http) throws Exception {
 		
-		System.out.println("Hello");
-		
 		http.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()

@@ -51,6 +51,7 @@ public class Category {
 	@NotEmpty (message = "Description Can't be Empty.")
 	private String description;
 	
+	//Bidirectional
 	@JsonIgnore
 	@OneToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "category")
     List<Product> products = new ArrayList<>();

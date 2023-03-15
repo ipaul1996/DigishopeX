@@ -43,6 +43,10 @@ public class Shipper {
 	@NotEmpty (message = "Mobile Number Can't be Empty.")
 	private String mobileNumber;
 	
+	
+	private Boolean active = true;
+	
+	//Bidirectional
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "shipper")
 	private List<Orders> orders = new ArrayList<>();

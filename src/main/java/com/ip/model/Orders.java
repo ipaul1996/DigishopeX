@@ -1,6 +1,6 @@
 package com.ip.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,33 +39,41 @@ public class Orders {
 	private Integer orderID;
 	
 	@JsonIgnore
-	private LocalDate orderDate = LocalDate.now();
+	private LocalDateTime orderDateTime = LocalDateTime.now();
 	
-	private LocalDate shipDate;
+	private LocalDateTime shipDateTime;
 	
-	private LocalDate deliveryDate;
+	private LocalDateTime deliveryDateTime;
 	
 	@NotNull(message = "total_order_amount should not be null")
 	private Double total_order_amount;
 	
-	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
-	private List<OrderDetail> details = new ArrayList<>();
+	private Boolean returnRequested = false;
 	
-	@ManyToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "shipperID")
-	private Shipper shipper;
-	
-	@OneToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "paymentID")
-	private Payment payment;
+	private Boolean cancelled = false;
 	
 	@JsonIgnore
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 	
+	//Bidirectional
+	@JsonIgnore
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
+	private List<OrderDetail> details = new ArrayList<>();
 	
-	@ManyToOne(cascade = { CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
+	//Bidirectional
+	@ManyToOne(cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "shipperID")
+	private Shipper shipper;
+	
+	//Bidirectional
+	@OneToOne(cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "paymentID")
+	private Payment payment;
+	
+	
+	//Bidirectional
+	@ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinColumn(name = "customerID")
 	private Customer customer;
 

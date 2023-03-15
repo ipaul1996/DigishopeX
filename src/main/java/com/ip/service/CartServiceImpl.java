@@ -230,8 +230,15 @@ public class CartServiceImpl implements CartService {
 															  .collect(Collectors.toList())
 															  .get(0);
 			
+			System.out.println("delete_Product : " + deleteProduct);
+			
 			c.getCart().getProducts().remove(deleteProduct);
+			
+			System.out.println("stock_quantity_before : " + op.get().getStockQuantity());
+			
 			op.get().setStockQuantity(op.get().getStockQuantity() + cpq.getProductQuantity());
+			
+			System.out.println("stock_quantity_after : " + op.get().getStockQuantity());
 			
 			cRepo.save(c.getCart());							
 			cpqRepo.delete(cpq);
@@ -287,12 +294,13 @@ public class CartServiceImpl implements CartService {
 			cv2.setCategoryName(c1.getCategory().getCategoryName());
 			cv2.setImageUrl(c1.getProductImage());
 			cv2.setPrice(c1.getPrice());
-			priceList.add(c1.getPrice());
+			
 			cv2.setProductId(c1.getProductId());
 			cv2.setProductName(c1.getProductImage());
 			Integer quantity = cpqRepo.findByCartIdAndProductId(c.getCart().getCartId(), c1.getProductId()).getProductQuantity();
 			cv2.setQuantity(quantity);
 			quantList.add(quantity);
+			priceList.add(c1.getPrice() * quantity);
 			list.add(cv2);
 		});
 		

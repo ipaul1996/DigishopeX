@@ -71,26 +71,33 @@ public class Product {
 	@Column(name = "NoOfPeopleRated")
 	private Integer noOfPeopleRated = 0;
 	
+	@Column(name = "StockQuantity")
+	private Integer stockQuantity = 0;
+	
+	//Unidirectional
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL)
 	List<ProductRatings> productRatings = new ArrayList<>();
 	
 	
+	//Bidirectional
 	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "CategoryID", referencedColumnName = "categoryId", nullable = true )
 	Category category;
 	
-	@Column(name = "StockQuantity")
-	private Integer stockQuantity = 0;
-	
+	//Bidirectional
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
 	private List<Cart> cartList = new ArrayList<>();
 	
+	
+	//Bidirectional
 	@JsonIgnore
 	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "product")
 	private OrderDetail detail;
 	
+	
+	//Bidirectional
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "product")
 	private List<FeedBack> feedBack = new ArrayList<>();

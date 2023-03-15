@@ -107,7 +107,99 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			
+			
+			<plugin>
+			    <groupId>com.github.kongchen</groupId>
+			    <artifactId>swagger-maven-plugin</artifactId>
+			    <version>3.1.3</version>
+			    <configuration>
+			        <apiSources>
+				    <apiSource>
+			        	<springmvc>false</springmvc>
+					<locations>com.baeldung.swagger2pdf.controller.UserController</locations>
+					<basePath>/api</basePath>
+					<info>
+				            <title>DEMO REST API</title>
+					    <description>A simple DEMO project for REST API documentation</description>
+					    <version>v1</version>
+					</info>
+					<swaggerDirectory>${project.build.directory}/api</swaggerDirectory>
+				        <attachSwaggerArtifact>true</attachSwaggerArtifact>
+			            </apiSource>
+			        </apiSources>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <phase>package</phase>
+			            <goals>
+					<goal>generate</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			
+			<plugin>
+			    <groupId>io.github.robwin</groupId>
+			    <artifactId>swagger2markup-maven-plugin</artifactId>
+			    <version>0.9.3</version>
+			    <configuration>
+			        <inputDirectory>${project.build.directory}/api</inputDirectory>
+			        <outputDirectory>${generated.asciidoc.directory}</outputDirectory>
+			        <markupLanguage>asciidoc</markupLanguage>
+			    </configuration>
+			    <executions>
+			        <execution>
+				    <phase>package</phase>
+			            <goals>
+			                <goal>process-swagger</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			
+			<plugin>
+			    <groupId>org.asciidoctor</groupId>
+			    <artifactId>asciidoctor-maven-plugin</artifactId>
+			    <version>2.2.1</version>
+			    <dependencies>
+			        <dependency>
+				    <groupId>org.asciidoctor</groupId>
+			            <artifactId>asciidoctorj-pdf</artifactId>
+			            <version>1.6.0</version>
+			        </dependency>
+			    </dependencies>
+			    <configuration>
+			        <sourceDirectory>${project.build.outputDirectory}/../asciidoc</sourceDirectory>
+			        <sourceDocumentName>overview.adoc</sourceDocumentName>
+			        <attributes>
+			            <doctype>book</doctype>
+			            <toc>left</toc>
+			            <toclevels>2</toclevels>
+			            <generated>${generated.asciidoc.directory}</generated>
+			        </attributes>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <id>asciidoc-to-pdf</id>
+			            <phase>package</phase>
+			            <goals>
+			                <goal>process-asciidoc</goal>
+			            </goals>
+			            <configuration>
+			                <backend>pdf</backend>
+			                <outputDirectory>${project.build.outputDirectory}/api/pdf</outputDirectory>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
+			
+			
 		</plugins>
 	</build>
+	
+	
+	
+	
 
 </project>

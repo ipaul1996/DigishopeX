@@ -49,6 +49,16 @@ public class Supplier {
 	@NotEmpty (message = "Mobile Number Can't be Empty.")
 	private String mobileNumber;
 	
+	@Column(name = "categoryname")
+	@NotNull(message = "Category name can't be null.")
+	@NotBlank(message = "Category name can't be Blank.")
+	@NotEmpty (message = "Category name can't be Empty.")
+	private String categoryName;
+	
+	
+	private Boolean active = true;
+	
+	//Bidirectional
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "supplier")
 	private List<OrderDetail> details = new ArrayList<>();

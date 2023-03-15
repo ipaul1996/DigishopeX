@@ -2,6 +2,7 @@ package com.ip;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -12,7 +13,10 @@ import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import io.swagger.v3.oas.annotations.servers.Server;
 
 @SpringBootApplication
-@OpenAPIDefinition(info = @Info(title = "REST API", version = "1.1"),
+@EnableScheduling
+@OpenAPIDefinition(info = @Info(title = "DigishopeX E-Commerce REST API", version = "1.1", description = "This API provides "
+		+ "endpoints for managing admin, customer, guest-user, categories, products, cart, orders, payments, Supplier, Shipper "
+		+ "Feedback, Report for an e-commerce platform. Spring Security has been used for authentication and authorization."),
 						security = {
 									@SecurityRequirement(name = "basicAuth"),
 									@SecurityRequirement(name = "bearerToken")

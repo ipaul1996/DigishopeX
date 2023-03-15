@@ -17,7 +17,9 @@ import com.ip.dto.CustomerDTOV2;
 import com.ip.enums.UserRole;
 import com.ip.exception.CredentialException;
 import com.ip.exception.CustomerException;
+import com.ip.exception.ProductException;
 import com.ip.model.Customer;
+import com.ip.model.Product;
 import com.ip.repository.CustomerRepo;
 
 @Service
@@ -29,6 +31,9 @@ public class CustomerServiceImpl implements CustomerService {
 	
 	@Autowired
 	private PasswordEncoder pEncoder;
+	
+	@Autowired
+	private CartService cService;
 
 	
 	@Override
@@ -88,7 +93,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public Customer deleteCustomer(String email) throws CustomerException, CredentialException {
+	public Customer deleteCustomer(String email) throws CustomerException, CredentialException, ProductException {
 		
 		Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
 		
@@ -106,7 +111,23 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new CustomerException("No details found...");
 		}
 		
-		cRepo.delete(op.get());
+		Customer customer = op.get();
+		
+		if(customer.getCart() != null && !customer.getCart().getProducts().isEmpty()) {
+			
+			List<Product> products = new ArrayList<>(customer.getCart().getProducts());
+			
+			System.out.println("List_of_products : " + products);
+			
+			for(Product p : products) {
+				System.out.println("Deleted_Product : " + cService.deleteFromCart(p.getProductId()));
+			}
+			
+			
+		}
+		
+		
+		cRepo.delete(customer);
 		
 		return op.get();
 	}

@@ -106,6 +106,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Product updateProduct(ProductDTO pdto) throws ProductException, CategoryException {
 		
+		System.out.println("Id : " + pdto.getProductId());
 		
 		if(pdto.getProductId() == null) {
 			throw new ProductException("To update a product you must provide a correct product id");
@@ -410,7 +411,7 @@ public class ProductServiceImpl implements ProductService {
 		Double maxRatings1 = maxRatings.doubleValue();
 		Double minRatings1 = minRatings.doubleValue();
 		
-		if(maxRatings1 <= minRatings1 || minRatings1 < 0 ) {
+		if(maxRatings1 <= minRatings1 || minRatings1 < 0 || maxRatings1 > 5) {
 			throw new ProductException("Invalid ratings range");
 		}
 		
@@ -532,7 +533,7 @@ public class ProductServiceImpl implements ProductService {
 		Double newAvgRatings = Double.valueOf(df.format(((avgRatings * noOfPeople) - oldRatings + ratings)/noOfPeople));
 		
 		op.get().setAvgRatings(newAvgRatings);
-		op.get().setNoOfPeopleRated(noOfPeople + 1);
+		op.get().setNoOfPeopleRated(noOfPeople);
 		op.get().getProductRatings().add(productRatings);
 		
 		return pRepo.save(op.get());

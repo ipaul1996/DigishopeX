@@ -53,7 +53,8 @@ public class AdminController {
 	
 	@Operation(summary = "Register as an admin", description = "An user can register himself as an admin")
 	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "All the fields are mandatory. "
-			+ "The field value for role should be admin")
+			+ "The field value for role should be admin, admin name should be minimum of size 3, mobile number should start with 6, 7, 8 or 9"
+			+ " and remaining 9 numbers should be between 0 - 9")
 	@PostMapping("/create")
 	public ResponseEntity<Admin> createAdminHandler(@Validated @RequestBody AdminDTO dto) throws AdminException {
 		return new ResponseEntity<>(aService.createAdmin(dto), HttpStatus.CREATED);
@@ -127,7 +128,7 @@ public class AdminController {
 			+ " and quantity")
 	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Admin should provide valid productid and quantity")
 	@PostMapping("/products/add")
-	public ResponseEntity<Product> addExistingProductHandler(ProductDTOV2 pdto) throws ProductException {
+	public ResponseEntity<Product> addExistingProductHandler(@Validated @RequestBody ProductDTOV2 pdto) throws ProductException {
 		return new ResponseEntity<Product>(pService.addExistingProduct(pdto), HttpStatus.CREATED);
 	}
 	
@@ -136,7 +137,7 @@ public class AdminController {
 	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Admin should provide valid productid. All other fields are optional."
 			+ " If he provides category name, it should be a valid one i.e., it should exist in database")
 	@PutMapping("/products/update")
-	public ResponseEntity<Product> updateProductHandler(ProductDTO pdto) throws ProductException, CategoryException {
+	public ResponseEntity<Product> updateProductHandler(@Validated @RequestBody ProductDTO pdto) throws ProductException, CategoryException {
 		return new ResponseEntity<Product>(pService.updateProduct(pdto), HttpStatus.ACCEPTED);
 	}
 	
@@ -239,7 +240,7 @@ public class AdminController {
 			description = "Admin can filter products by a rating range for a category by providing valid categoryid, "
 					+ " lower bound of price range and upper bound of price range")
 	@GetMapping("/products/filterbyratings/{cid}/{min}/{max}")
-	public ResponseEntity<List<Product>> filterProductsByRatingsForACategoryHandler(@Parameter(description = "catid represents categoryid") @PathVariable("cid") @NotNull Integer categoryId, @Parameter(description = "min represents lower bound of ratings range, it should be >= 0.0") @PathVariable("min") @NotNull Integer minRatings, @Parameter(description = "max represents upper bound of ratings range, it should be <= 5.0") @PathVariable("max") @NotNull Integer maxRatings) throws ProductException, CategoryException {
+	public ResponseEntity<List<Product>> filterProductsByRatingsForACategoryHandler(@Parameter(description = "catid represents categoryid") @PathVariable("cid") @NotNull Integer categoryId, @Parameter(description = "min represents lower bound of ratings range, it should be >= 0") @PathVariable("min") @NotNull Integer minRatings, @Parameter(description = "max represents upper bound of ratings range, it should be <= 5") @PathVariable("max") @NotNull Integer maxRatings) throws ProductException, CategoryException {
 		return new ResponseEntity<List<Product>>(pService.filterProductsByRatingsForACategory(categoryId, minRatings, maxRatings), HttpStatus.OK);
 	}
 	

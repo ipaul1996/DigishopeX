@@ -36,6 +36,7 @@ public class Payment {
 	@Enumerated(EnumType.STRING)
 	private PaymentType paymentType;
 	
+	//Bidirectional
 	@JsonIgnore
 	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "payment")
 	private Orders order;
