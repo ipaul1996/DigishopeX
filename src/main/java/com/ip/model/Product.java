@@ -2,6 +2,7 @@ package com.ip.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -58,6 +59,12 @@ public class Product {
 	@NotEmpty (message = "Description Can't be Empty.")
 	private String description;
 	
+	
+	@Column(name = "CostPrice")
+	@NotNull(message = "Cost price can't be null.")
+	@DecimalMin(value = "1.0", message = "Minimum cost price should be 1.0")
+	private Double costPrice;
+	
 	@Column(name = "ProductPrice")
 	@NotNull(message = "Price Can't be null.")
 	@DecimalMin(value = "1.0", message = "Minimum price should be 1.0")
@@ -101,6 +108,41 @@ public class Product {
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "product")
 	private List<FeedBack> feedBack = new ArrayList<>();
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(avgRatings, costPrice, description, noOfPeopleRated, price, productId, productImage,
+				productName, stockQuantity);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (this == obj)
+			return true;
+		
+		if (obj == null)
+			return false;
+		
+		if (getClass() != obj.getClass())
+			return false;
+		Product other = (Product) obj;
+		
+		return Objects.equals(avgRatings, other.avgRatings) 
+				&& Objects.equals(costPrice, other.costPrice)
+				&& Objects.equals(description, other.description)
+				&& Objects.equals(noOfPeopleRated, other.noOfPeopleRated) 
+				&& Objects.equals(price, other.price)
+				&& Objects.equals(productId, other.productId) 
+				&& Objects.equals(productImage, other.productImage)
+				&& Objects.equals(productName, other.productName)
+				&& Objects.equals(stockQuantity, other.stockQuantity);
+	}
+	
+	
+	
 	
 
 }

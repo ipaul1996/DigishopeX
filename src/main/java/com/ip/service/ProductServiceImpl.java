@@ -64,10 +64,16 @@ public class ProductServiceImpl implements ProductService {
 			throw new CategoryException("You must provide category name while adding a product");
 		}
 		
+		if(pdto.getPrice() < pdto.getCostPrice()) {
+			throw new ProductException("Selling price can not be less than the cost price");
+		}
+		
+		
 		Product p = new Product();
 		p.setProductName(pdto.getProductName());
 		p.setProductImage(pdto.getProductImage());
 		p.setDescription(pdto.getDescription());
+		p.setCostPrice(pdto.getCostPrice());
 		p.setPrice(pdto.getPrice());
 		p.setStockQuantity(pdto.getQuanity());
 		
@@ -132,8 +138,16 @@ public class ProductServiceImpl implements ProductService {
 			p.setDescription(pdto.getDescription());
 		}
 		
+		if(pdto.getCostPrice() != null) {
+			p.setCostPrice(pdto.getCostPrice());
+		}
+		
 		if(pdto.getPrice() != null) {
 			p.setPrice(pdto.getPrice());
+		}
+		
+		if(p.getPrice() < p.getCostPrice()) {
+			throw new ProductException("Selling price can not be less than the cost price");
 		}
 		
 		if(pdto.getCategoryName() != null) {
