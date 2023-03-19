@@ -280,14 +280,14 @@ public class AdminController {
 			+ " Moile number, Category name. Optional Fields: City, State, Pincode, Active(By default it is true). "
 			+ " Mobile number should start with 6, 7, 8 or 9 and remaining 9 numbers should be between 0 - 9. No need to provide "
 			+ "shipperID as it is auto generated")
-	@PostMapping("/supplier/register")
+	@PostMapping("/suppliers/register")
 	public ResponseEntity<Supplier> registerSupplierHandler(@Validated @RequestBody Supplier supplier) throws SupplierException {
 		return new ResponseEntity<>(oService.registerSupplier(supplier), HttpStatus.ACCEPTED);
 	}
 	
 	@Operation(summary = "Change active status of a supplier", description = "Admin can change the active status "
 			+ "of a supplier")
-	@PatchMapping("/supplier/changestatus/{sid}")
+	@PatchMapping("/suppliers/changestatus/{sid}")
 	public ResponseEntity<String> changeActiveStatusOfSupplierHandler(@Parameter(description = "sid represents supplierid")@PathVariable("sid") @NotNull Integer supplierID) throws SupplierException {
 		return new ResponseEntity<>(oService.changeActiveStatusOfSupplier(supplierID), HttpStatus.OK);
 	}
@@ -295,7 +295,7 @@ public class AdminController {
 	
 	@Operation(summary = "Register a shipper", 
 			description = "Admin can register a shipper by providing all necessary shipper details")
-	@PostMapping("/shipper/register")
+	@PostMapping("/shippers/register")
 	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Here all the fields are mandatory"
 			+ " except shipperID and active status. You need not provide the shipperId as it is auto-generated. Active status "
 			+ " is optional field and by default it is true")
@@ -305,7 +305,7 @@ public class AdminController {
 	
 	@Operation(summary = "Change active status of a shipper", description = "Admin can change the active status "
 			+ "of a shipper")
-	@PatchMapping("/shipper/changestatus/{sid}")
+	@PatchMapping("/shippers/changestatus/{sid}")
 	public ResponseEntity<String> changeActiveStatusOfShipperHandler(@Parameter(description = "sid represents shipperid") @PathVariable("sid") @NotNull Integer shipperID) throws ShipperException {
 		return new ResponseEntity<>(oService.changeActiveStatusOfShipper(shipperID), HttpStatus.OK);
 	}
