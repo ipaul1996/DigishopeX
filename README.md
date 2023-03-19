@@ -31,7 +31,7 @@ This application provides a comprehensive set of RESTful web services that can h
 
 The application is secured with **_Spring Security_**, which provides robust authentication and authorization mechanisms to ensure that users are only able to access the functionalities that they are authorized to use. **_CORS_** feature is also incorporated so that the web services can be accessed through any type of client, making it easier for users to interact with the application.
 Overall, this RESTful web service provides extensive functionalities to perform various **_CRUD_** operations required in an E-commerce application, making it an ideal choice for businesses that want to create a scalable and efficient E-commerce platform.
-
+# 👉 [Click here]() to go through a detailed video explanation of this project.
 
 ## Project Structure
 
@@ -62,6 +62,9 @@ Overall, this RESTful web service provides extensive functionalities to perform 
 ## API Documentation
 👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/DigishopeX-api-documentation.pdf) to view **API Documentation**
 
-
+## Feedback
+Valuable feedback will be appreciated.
+You can reach out to me via LinkedIn.
+[Let's Connect...](https://www.linkedin.com/in/indrajitpaul1996/)
 
 
