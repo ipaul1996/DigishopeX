@@ -62,6 +62,10 @@ Overall, this RESTful web service provides extensive functionalities to perform 
 ## API Documentation
 👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/DigishopeX-api-documentation.pdf) to view **API Documentation**
 
+## API Root
+- http://localhost:8080/
+- http://localhost:8080/swagger-ui/index.html#/
+
 ## Feedback
 Valuable feedback will be appreciated.
 You can reach out to me via LinkedIn.
