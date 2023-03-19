@@ -2,6 +2,7 @@ package com.ip;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -14,7 +15,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @SpringBootApplication
 @EnableScheduling
-@OpenAPIDefinition(info = @Info(title = "DigishopeX E-Commerce REST API", version = "1.1", 
+@OpenAPIDefinition(info = @Info(title = "DigishopeX E-Commerce REST API", version = "1.1",
 						description = "This application provides a comprehensive set of RESTful "
 								+ "web services that can handle various operations of an E-commerce "
 								+ "website. There are three types of users - Admin, Customer, and "
@@ -39,7 +40,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 								+ "they are authorized to use. CORS feature is also incorporated so that the web services can be "
 								+ "accessed through any type of client, making it easier for users to interact with the application.\r\n"
 								+ "Overall, this RESTful web service provides extensive functionalities to perform various CRUD "
-								+ "operations required in an E-commerce application."
+								+ "operations required in an E-commerce application"
 								+ ""
 						),
 						security = {
@@ -49,6 +50,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 						servers = {
 									@Server(url = "/", description = "Default Server URL")
 								  }
+					
 						)
 
 @SecuritySchemes({
