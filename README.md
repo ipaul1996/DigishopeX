@@ -40,8 +40,27 @@ Overall, this RESTful web service provides extensive functionalities to perform 
 </p>
 
 
+## Technologies and Tools used 
+
+- Java
+- MySQL
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- Hibernate
+- lombok
+- Maven
+- Git & GitHub
+- Spring Tool Suite
+- Postman
+- Swagger
 
 
+## ER Diagram
+
+
+## API Documentation
+👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/DigishopeX-api-documentation.pdf) to view **API Documentation**
 
 
 
