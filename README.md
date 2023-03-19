@@ -57,7 +57,7 @@ Overall, this RESTful web service provides extensive functionalities to perform 
 
 
 ## ER Diagram
-
+👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/er4.png) to view **ER Diagram**
 
 ## API Documentation
 👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/DigishopeX-api-documentation.pdf) to view **API Documentation**
