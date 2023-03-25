@@ -1,0 +1,64 @@
+** Important SQL Queries in MySQL for the Project
+
+CREATE DATABASE DigishopeXDB;
+
+USE DigishopeXDB;
+
+DROP DATABASE DigishopeXDB;
+
+SHOW TABLES;
+
+
+DESC admin;
+DESC black_listed_token;
+DESC cancelled_orders;
+DESC cart;
+DESC cart_product_quantity;
+DESC cart_products;
+DESC category;
+DESC customer;
+DESC daywise_sales_data;
+DESC daywise_sales_data_revenue_breakdown;
+DESC daywise_sales_data_top_selling_products;
+DESC feed_back;
+DESC order_detail;
+DESC orders;
+DESC payment;
+DESC product;
+DESC product_product_ratings;
+DESC product_ratings;
+DESC productdtov3;
+DESC report;
+DESC return_requested_orders;
+DESC returned_order_details;
+DESC revenuedto;
+DESC shipper;
+DESC supplier;
+
+
+
+SELECT * FROM admin;
+SELECT * FROM black_listed_token;
+SELECT * FROM cancelled_orders;
+SELECT * FROM cart;
+SELECT * FROM cart_product_quantity;
+SELECT * FROM cart_products;
+SELECT * FROM category;
+SELECT * FROM customer;
+SELECT * FROM daywise_sales_data;
+SELECT * FROM daywise_sales_data_revenue_breakdown;
+SELECT * FROM daywise_sales_data_top_selling_products;
+SELECT * FROM feed_back;
+SELECT * FROM order_detail;
+SELECT * FROM orders;
+SELECT * FROM payment;
+SELECT * FROM product;
+SELECT * FROM product_product_ratings;
+SELECT * FROM product_ratings;
+SELECT * FROM productdtov3;
+SELECT * FROM report;
+SELECT * FROM return_requested_orders;
+SELECT * FROM returned_order_details;
+SELECT * FROM revenuedto;
+SELECT * FROM shipper;
+SELECT * FROM supplier;
