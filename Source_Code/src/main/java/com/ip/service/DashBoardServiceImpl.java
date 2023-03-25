@@ -140,9 +140,8 @@ public class DashBoardServiceImpl implements DashBoardService{
 		
 		Double avgOrderValue = Double.valueOf(df.format(totalSalesPriceForAllOrders / noOfOrders));
 		
-		Double otherExpenses = ((new Random().nextDouble(1, 6))/100) * totalSalesPriceForAllOrders;
 		
-		Double totalRevenueGenerated = totalSalesPriceForAllOrders - totalCostPriceForAllOrders - otherExpenses;
+		Double totalRevenueGenerated = totalSalesPriceForAllOrders - totalCostPriceForAllOrders;
 		
 		List<ProductDTOV3> topTenProducts = new ArrayList<>();
 		
@@ -157,7 +156,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 			count++;
 			if(count > 10) break;
 		}
-		
+
 		
 		List<RevenueDTO> revenueBreakdownList = new ArrayList<>();
 		
@@ -175,7 +174,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 		
 		
 		String conversionRate = df.format((countCustomer.size() / cRepo.findAll().size()) * 100) + "%";
-		
+
 		
 		Optional<DaywiseSalesData> op = sdRepo.findByDate(LocalDate.now());
 		
@@ -187,6 +186,8 @@ public class DashBoardServiceImpl implements DashBoardService{
 		} else {
 			dsd = op.get();
 		}
+		
+		if(noOfOrders.equals(0)) return;
 		
 		dsd.setDate(LocalDate.now());
 		dsd.setNoOfOrders(noOfOrders);

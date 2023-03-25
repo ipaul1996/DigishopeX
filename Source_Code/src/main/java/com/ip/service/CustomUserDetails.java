@@ -9,6 +9,7 @@ public class CustomUserDetails implements UserDetails{
 	
 	private final String username;
 	private final String password;
+	
 	private final Collection<? extends GrantedAuthority> authorities;
 	
 	public CustomUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities) {
@@ -39,7 +40,6 @@ public class CustomUserDetails implements UserDetails{
 
 	@Override
 	public boolean isAccountNonLocked() {
-		System.out.println("Locked");
 		return true;
 	}
 

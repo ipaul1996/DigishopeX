@@ -20,6 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.ip.dto.CancelledDTO;
+import com.ip.dto.CartDTOV2;
+import com.ip.dto.CartDTOV3;
 import com.ip.dto.OrderDTO;
 import com.ip.dto.ReturnRequestDTO;
 import com.ip.enums.OrderStatus;
@@ -31,6 +33,7 @@ import com.ip.exception.ShipperException;
 import com.ip.exception.SupplierException;
 import com.ip.model.CancelledOrders;
 import com.ip.model.Cart;
+import com.ip.model.CartProductQuantity;
 import com.ip.model.Customer;
 import com.ip.model.OrderDetail;
 import com.ip.model.Orders;
@@ -50,15 +53,14 @@ import com.ip.repository.ReturnRequestedOrdersRepo;
 import com.ip.repository.ShipperRepo;
 import com.ip.repository.SupplierRepo;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class OrderServiceImpl implements OrderService {
 	
 	
 	@Autowired
 	private CustomerRepo cRepo;
-	
-	@Autowired
-	private CartService cService;
 	
 	@Autowired
 	private OrdersRepo oRepo;
@@ -87,7 +89,6 @@ public class OrderServiceImpl implements OrderService {
 	
 	@Autowired
 	private CategoryRepo catRepo;
-	
 
 	
 	public String formatString(String string) {
@@ -115,6 +116,7 @@ public class OrderServiceImpl implements OrderService {
 		
 		return suppRepo.save(supplier);
 	}
+
 	
 	@Override
 	public String changeActiveStatusOfSupplier(Integer supplierID) throws SupplierException {
@@ -135,6 +137,7 @@ public class OrderServiceImpl implements OrderService {
 				" has changed to " + supplier.getActive();
 		
 	}
+
 	
 	@Override
 	public Shipper registerShipper(Shipper shipper) throws ShipperException {
@@ -167,7 +170,6 @@ public class OrderServiceImpl implements OrderService {
 		
 	}
 	
-	
 	@Override
 	public OrderDTO makePurchase(Payment payment) throws SupplierException, ProductException, CustomerException, CredentialException {
 		
@@ -180,12 +182,14 @@ public class OrderServiceImpl implements OrderService {
 		if(cart == null || cart.getProducts().size() == 0) {
 			throw new ProductException("Cart has no product i.e., empty. Please add products to make purchase");
 		}
+
 		
 		final Orders o = new Orders();
 		
 		List<Product> products = cart.getProducts();
 		
-		Set<String> supplierList = new LinkedHashSet<>();
+		Set<String> supplierList = new LinkedHashSet<>();		
+		List<CartProductQuantity> quantitiesToDelete = new ArrayList<>();
 		        	
 	    for(Product p : products) {
 			
@@ -193,8 +197,8 @@ public class OrderServiceImpl implements OrderService {
 			
 			od.setProduct(p);
 			
-			od.setQuantity(cpqRepo.findByCartIdAndProductId(cart.getCartId(), customer.getUserid()).getProductQuantity());
-			cpqRepo.delete(cpqRepo.findByCartIdAndProductId(cart.getCartId(), customer.getUserid()));
+			od.setQuantity(cpqRepo.findByCartIdAndProductId(cart.getCartId(), p.getProductId()).getProductQuantity());
+			quantitiesToDelete.add(cpqRepo.findByCartIdAndProductId(cart.getCartId(), p.getProductId()));
 			
 			
 			//Assign Supplier
@@ -213,13 +217,13 @@ public class OrderServiceImpl implements OrderService {
 			if(suppliers.isEmpty()) {
 				throw new SupplierException("No supplier found...");
 			}
+
 			
 			//Randomly selecting a supplier from the list of suppliers
 			Supplier supplier = suppliers.get(new Random().nextInt(suppliers.size()));
 			
 			supplierList.add(supplier.getCompanyName());
-			
-			
+
 			//Associate supplier and orderdetails with each other
 			od.setSupplier(supplier);
 			supplier.getDetails().add(od);
@@ -227,19 +231,50 @@ public class OrderServiceImpl implements OrderService {
 			//Associate order and orderdetails with each other
 			od.setOrder(o);
 			o.getDetails().add(od);
+			  
 			
 		}
-		
-	    //Clearing the cart
-		products.clear();
-		cart.setProducts(products);
+	    
 		
 		//Associating the payment and orders with each other 
 		o.setPayment(payment);
 		payment.setOrder(o);
 		
-		//Setting the total_order_amount 
-		o.setTotal_order_amount(cService.showCart(customer.getEmail()).getSubtotal());
+
+		List<CartDTOV2> list = new ArrayList<>();
+		List<Integer> quantList = new ArrayList<>();
+		List<Double> priceList = new ArrayList<>();
+		
+		products.forEach(c1 -> {
+			CartDTOV2 cv2 = new CartDTOV2();
+			cv2.setCartId(cart.getCartId());
+			cv2.setCategoryName(c1.getCategory().getCategoryName());
+			cv2.setImageUrl(c1.getProductImage());
+			cv2.setPrice(c1.getPrice());
+			
+			cv2.setProductId(c1.getProductId());
+			cv2.setProductName(c1.getProductImage());
+			Integer quantity = cpqRepo.findByCartIdAndProductId(customer.getCart().getCartId(), c1.getProductId()).getProductQuantity();
+			cv2.setQuantity(quantity);
+			quantList.add(quantity);
+			priceList.add(c1.getPrice() * quantity);
+			list.add(cv2);
+		});
+		
+		CartDTOV3 cv3 = new CartDTOV3();
+		cv3.setList(list);
+		cv3.setQuantity(quantList.stream().reduce(0, (s, e) -> s + e));
+		cv3.setSubtotal(priceList.stream().reduce(0.0, (s, e) -> s + e));
+		
+		o.setTotal_order_amount(cv3.getSubtotal());
+		
+		//Clearing the cart
+		products.clear();
+		cart.setProducts(products);
+		
+		//Associating customer with order
+		o.setCustomer(customer);
+		customer.getOrders().add(o);
 		
 		//Setting order status
 		o.setOrderStatus(OrderStatus.PENDING);
@@ -272,9 +307,14 @@ public class OrderServiceImpl implements OrderService {
                 											  .atTime(LocalTime.of(new Random().nextInt(10, 21), 
                 													  new Random().nextInt(60), new Random().nextInt(60)));
 		o.setDeliveryDateTime(deliveryDateTime);
-	
+
 		//Persist the order object
 		Orders o1 = oRepo.save(o);
+		
+		System.out.println("test5");
+		
+		cpqRepo.deleteAll(quantitiesToDelete);
+	    quantitiesToDelete.clear();
 		
 		//Create OrderDTO which contains all the required informations of the saved order
 		OrderDTO od = new OrderDTO();
@@ -375,6 +415,7 @@ public class OrderServiceImpl implements OrderService {
 	@Scheduled(fixedRate = 300000)
 	public void updateOrderStatus() {
 		
+		
 		List<Orders> orders = oRepo.findAll();
 		
 		if(!orders.isEmpty()) {
@@ -418,9 +459,8 @@ public class OrderServiceImpl implements OrderService {
 			}
 			
 		}
+	
 		
-		
-
 	}
 
 	
@@ -565,6 +605,8 @@ public class OrderServiceImpl implements OrderService {
 	@Scheduled(fixedRate = 300000)
 	public void updateStock() {
 		
+	
+	
 		List<ReturnRequestedOrders> orders = rroRepo.findAll();
 		
 	    orders.stream()
@@ -592,9 +634,10 @@ public class OrderServiceImpl implements OrderService {
 	    
 	    
 	    rroRepo.saveAll(orders);
+	    
+		    
+		
 	}
-	
-	
 	
 	
 	@Override

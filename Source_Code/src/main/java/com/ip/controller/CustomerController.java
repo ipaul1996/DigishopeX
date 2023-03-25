@@ -285,11 +285,11 @@ public class CustomerController {
     		+ " PaymentType represents the type of payment method used by the customer, which can be one of the following options: "
     		+ "DEBITCARD, POD, PAYPAL, WALLET, NETBANKING, or UPI.")
     @PostMapping("/orders/purchase")
-    public ResponseEntity<OrderDTO> plcaeOrderHandler(@Validated @RequestBody Payment payment) throws SupplierException, ProductException, CustomerException, CredentialException {
+    public ResponseEntity<OrderDTO> plcaeOrderHandler(@RequestBody Payment payment) throws SupplierException, ProductException, CustomerException, CredentialException {
     	return new ResponseEntity<>(oService.makePurchase(payment), HttpStatus.ACCEPTED);
     }
    
-   
+  
     @Operation(summary = "Cancel an order", description = "Customer can cancel an order by providng a valid orderid. "
     		+ "Cancelling an order is only possible if the product is not shipped yet. After cancelling the product customer "
     		+ "customer will get a response in which a refund datetime will be present. Refund date will be 7 days"

@@ -6,10 +6,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,7 +47,7 @@ public class Product {
 	@NotEmpty (message = "Image URL Can't be Empty.")
 	private String productImage;
 	
-	@Column(name = "ProductName")
+	@Column(name = "ProductName", unique = true)
 	@NotNull(message = "Product Name Can't be null.")
 	@NotBlank(message = "Product Name Can't be Blank.")
 	@NotEmpty (message = "Product Name Can't be Empty.")
@@ -83,7 +83,7 @@ public class Product {
 	
 	//Unidirectional
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	List<ProductRatings> productRatings = new ArrayList<>();
 	
 	

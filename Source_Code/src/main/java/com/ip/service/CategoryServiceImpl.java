@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ip.dto.CategoryDTO;
 import com.ip.exception.CategoryException;
 import com.ip.model.Category;
 import com.ip.model.Product;
@@ -51,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService{
 
 	
 	@Override
-	public Category updateCategory(Category category) throws CategoryException {
+	public Category updateCategory(CategoryDTO category) throws CategoryException {
 		
 		
 		if(category.getCategoryId() == null) {

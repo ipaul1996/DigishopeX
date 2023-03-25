@@ -30,9 +30,7 @@ public class Payment {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer paymentID;
 	
-	@NotNull(message = "Payment Type should not be null")
-	@NotBlank(message = "Payment Type should not be blank")
-	@NotEmpty(message = "Payment Type should not be empty")
+
 	@Enumerated(EnumType.STRING)
 	private PaymentType paymentType;
 	

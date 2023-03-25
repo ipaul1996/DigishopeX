@@ -49,7 +49,7 @@ public class LoginServiceImpl implements LoginService {
 	     }
 		
 
-		 return existingUser.toString() + " Logged In Successfully.. ";
+		 return "User with userid " +  existingUser.getUserid() + " has logged In Successfully.. ";
 		 
 	}
 

@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.ip.dto.CartDTO;
 import com.ip.dto.CartDTOV2;
@@ -26,6 +27,8 @@ import com.ip.repository.CartProductQuantityRepo;
 import com.ip.repository.CartRepo;
 import com.ip.repository.CustomerRepo;
 import com.ip.repository.ProductRepo;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -88,7 +91,9 @@ public class CartServiceImpl implements CartService {
 		} else {
 			
 			if(c.getCart().getProducts().stream().anyMatch(p1 -> p1.getProductId() == dto.getProductId())) {
-				p.setStockQuantity(p.getStockQuantity() - dto.getQuantity());
+//			
+				throw new ProductException("Product with ID: " + dto.getProductId() + " has already been"
+						+ " added to cart, if required you can increase the product quantity");
 				
 			} else {
 				
@@ -159,53 +164,67 @@ public class CartServiceImpl implements CartService {
 		return "Product quantity for the product with id " + productId + "  has been been increased by 1";
 	}
 	
-	
+	@Transactional
 	@Override
 	public String decreaseProductQuantity(Integer productId) throws ProductException {
 		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		
-		Optional<Product> op = pRepo.findById(productId);
-		
-		if(op.isEmpty()) {
-			throw new ProductException("Invalid product id");
-		}
-		
-		Customer c =  custRepo.findByEmail(auth.getName()).get();
-		
-		if(c.getCart() == null) {
-			throw new ProductException("No product found in the cart");
-		}
-		
-		if(c.getCart().getProducts().stream().anyMatch(p -> p.getProductId() == productId)) {
+		 try {
+			 
+		 
+				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				
-			CartProductQuantity cpq = cpqRepo.findByCartIdAndProductId(c.getCart().getCartId(), productId);		
-			cpq.setProductQuantity(cpq.getProductQuantity() - 1);
-			op.get().setStockQuantity(op.get().getStockQuantity() + 1);
-			
-			if(cpq.getProductQuantity() != 0) {				
-				cpqRepo.save(cpq);
-				pRepo.save(op.get());
+				Optional<Product> op = pRepo.findById(productId);
 				
-			} else {
-								
-				Product deleteProduct =  c.getCart().getProducts().stream()
-												    .filter(p -> p.getProductId() == productId)
-												    .collect(Collectors.toList())
-												    .get(0);
+				String result = null;
 				
-				c.getCart().getProducts().remove(deleteProduct);
-				cRepo.save(c.getCart());
-				cpqRepo.delete(cpq);
+				if(op.isEmpty()) {
+					throw new ProductException("Invalid product id");
+				}
 				
-			}
+				Customer c =  custRepo.findByEmail(auth.getName()).get();
+				
+				if(c.getCart() == null) {
+					throw new ProductException("No product found in the cart");
+				}
+				
+				if(c.getCart().getProducts().stream().anyMatch(p -> p.getProductId().equals(productId))) {
 						
-		} else {
-			throw new ProductException("You can't increase a product quantity which is not added into the cart");
-		}
+					CartProductQuantity cpq = cpqRepo.findByCartIdAndProductId(c.getCart().getCartId(), productId);		
+					cpq.setProductQuantity(cpq.getProductQuantity() - 1);
+					op.get().setStockQuantity(op.get().getStockQuantity() + 1);
+					
+					result = "Product quantity for the product with id " + productId + "  has been been decreased by 1";
+					if(!cpq.getProductQuantity().equals(0)) {				
+						cpqRepo.save(cpq);
+						pRepo.save(op.get());
+						
+					} else {
+										
+						Product deleteProduct =  c.getCart().getProducts().stream()
+														    .filter(p -> p.getProductId().equals(productId))
+														    .collect(Collectors.toList())
+														    .get(0);
+						
+						c.getCart().getProducts().remove(deleteProduct);
+						cRepo.save(c.getCart());
+						cpqRepo.delete(cpq);
+						
+						result = "Product with id " + productId + " has been removed from the cart";
+						
+					}
+								
+				} else {
+					throw new ProductException("You can't increase a product quantity which is not added into the cart");
+				}
+				
+				return result;
 		
-		return "Product quantity for the product with id " + productId + "  has been been decreased by 1";
-	}
+		 } catch(Exception e) {
+		        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		        throw e;
+		 }
+	 
+	 }
 
 	
 	@Override
@@ -222,23 +241,19 @@ public class CartServiceImpl implements CartService {
 		Customer c = custRepo.findByEmail(auth.getName()).get();
 		
 		CartProductQuantity cpq = cpqRepo.findByCartIdAndProductId(c.getCart().getCartId(), productId);	
-		
-		if(c.getCart().getProducts().stream().anyMatch(p1 -> p1.getProductId() == productId)) {
+
+		if(c.getCart().getProducts().stream().anyMatch(p1 -> p1.getProductId().equals(productId))) {
 			
 			Product deleteProduct =  c.getCart().getProducts().stream()
-															  .filter(p -> p.getProductId() == productId)
+															  .filter(p -> p.getProductId().equals(productId))
 															  .collect(Collectors.toList())
 															  .get(0);
 			
-			System.out.println("delete_Product : " + deleteProduct);
-			
 			c.getCart().getProducts().remove(deleteProduct);
 			
-			System.out.println("stock_quantity_before : " + op.get().getStockQuantity());
-			
+		
 			op.get().setStockQuantity(op.get().getStockQuantity() + cpq.getProductQuantity());
 			
-			System.out.println("stock_quantity_after : " + op.get().getStockQuantity());
 			
 			cRepo.save(c.getCart());							
 			cpqRepo.delete(cpq);
@@ -274,11 +289,15 @@ public class CartServiceImpl implements CartService {
 		
 		Customer c = custRepo.findByEmail(email).get();
 		
+		System.out.println("Hello");
+		
 		if(c.getCart() == null) {
 			throw new ProductException("No product found in the cart");
 		}
 		
 		List<Product> products = c.getCart().getProducts();
+		
+		System.out.println("Hello1" + products.isEmpty());
 		
 		if(products.isEmpty()) {
 			throw new ProductException("No product found in the cart");

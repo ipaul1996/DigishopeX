@@ -68,27 +68,43 @@ public class ProductServiceImpl implements ProductService {
 			throw new ProductException("Selling price can not be less than the cost price");
 		}
 		
-		
-		Product p = new Product();
-		p.setProductName(pdto.getProductName());
-		p.setProductImage(pdto.getProductImage());
-		p.setDescription(pdto.getDescription());
-		p.setCostPrice(pdto.getCostPrice());
-		p.setPrice(pdto.getPrice());
-		p.setStockQuantity(pdto.getQuanity());
-		
 		Category category = cRepo.findByCategoryName(formatString(pdto.getCategoryName()));
 		
 		if(category == null) {
 			throw new CategoryException("Please give a valid category name");
 		}
 		
-		p.setCategory(category);
+		List<Product> productList = category.getProducts();
 		
-		category.getProducts().add(p);
+		Product p;
+		
+		if(!productList.isEmpty() && productList.stream()
+					.anyMatch(p1 -> p1.getProductName().equals(pdto.getProductName()))) {
+			
+			 p = productList.stream()
+						    .filter(p1 -> p1.getProductName().equals(pdto.getProductName()))
+						    .collect(Collectors.toList())
+						    .get(0);
+			
+			p.setStockQuantity(p.getStockQuantity() + pdto.getQuanity());
+			
+		} else {
+			
+			p = new Product();
+			p.setProductName(pdto.getProductName());
+			p.setProductImage(pdto.getProductImage());
+			p.setDescription(pdto.getDescription());
+			p.setCostPrice(pdto.getCostPrice());
+			p.setPrice(pdto.getPrice());
+			p.setStockQuantity(pdto.getQuanity());
+			
+
+			p.setCategory(category);	
+			category.getProducts().add(p);
+			
+		}
 		
 		return pRepo.save(p);
-		
 	}
 	
 	
@@ -111,8 +127,6 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Override
 	public Product updateProduct(ProductDTO pdto) throws ProductException, CategoryException {
-		
-		System.out.println("Id : " + pdto.getProductId());
 		
 		if(pdto.getProductId() == null) {
 			throw new ProductException("To update a product you must provide a correct product id");
@@ -277,7 +291,8 @@ public class ProductServiceImpl implements ProductService {
 		products = products.stream()
 						.sorted((p1, p2) -> formatString(p1.getProductName()).compareTo(formatString(p2.getProductName())))
 						.collect(Collectors.toList());
-							
+				
+		
 		
 		return products;
 	}
@@ -470,12 +485,15 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Product rateAProduct(Integer productId, Integer ratings)
 			throws ProductException {
+
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		
+
 		Integer customerId = custRepo.findByEmail(auth.getName()).get().getUserid();
+
 		
 		Optional<Product> op =  pRepo.findById(productId);
+
 		
 		if(op.isEmpty()) {
 			throw new ProductException("Invalid product id");
@@ -486,16 +504,16 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		ProductRatings productRatings =  prRepo.findByCustomerIdAndProductId(customerId, productId);
-		
+
 		if(productRatings != null) {
 			throw new ProductException("You have already rated for the selected product. If you wish you can edit.");
 		}
-		
+
 		ProductRatings pr = new ProductRatings();
 		pr.setCustomerId(customerId);
 		pr.setProductId(productId);
 		pr.setRatings(ratings);
-		
+
 		Integer noOfPeople = op.get().getNoOfPeopleRated();
 		Double avgRatings =  op.get().getAvgRatings();
 		
@@ -505,6 +523,7 @@ public class ProductServiceImpl implements ProductService {
 		op.get().setAvgRatings(newAvgRatings);
 		op.get().setNoOfPeopleRated(noOfPeople + 1);
 		op.get().getProductRatings().add(pr);
+
 		
 		return pRepo.save(op.get());
 		

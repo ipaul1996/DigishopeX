@@ -1,12 +1,25 @@
+/**
+
+* DigishopeXApplication E-commerce REST API
+* This application was developed by Indrajit Paul. It provides a comprehensive set of
+* RESTful web services for an E-commerce website, including features for admins, customers, and guest-users.
+* The application is secured with Spring Security and incorporates CORS functionality for ease of use.
+* @author Indrajit Paul
+* @version 1.1
+* @since 24-03-2023
+
+
+**/
+
 package com.ip;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
@@ -43,7 +56,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
 								+ "accessed through any type of client, making it easier for users to interact with the application.\r\n"
 								+ "Overall, this RESTful web service provides extensive functionalities to perform various CRUD "
 								+ "operations required in an E-commerce application"
-								+ ""
+								+ "",
+								contact = @Contact(name = "Indrajit Paul", email = "indraindrani@gmail.com", url = "https://lu.ma/ip")
 						),
 						security = {
 									@SecurityRequirement(name = "basicAuth"),

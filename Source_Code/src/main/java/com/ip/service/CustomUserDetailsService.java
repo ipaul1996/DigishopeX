@@ -30,8 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
-		System.out.println("Hello");
-		
 		Optional<Customer> op1 =  cRepo.findByEmail(username);
 		Optional<Admin> op2 =  aRepo.findByEmail(username);
 		
@@ -55,9 +53,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 			user = op1.get();
 			
 		}
-		
-		
-		
+
 		
 		return  new CustomUserDetails(user.getEmail(), user.getPassword(),  authorities);
 		
