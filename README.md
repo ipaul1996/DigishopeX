@@ -58,9 +58,8 @@ Overall, this RESTful web service provides extensive functionalities to perform 
 ## ER Diagram
 👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/er4.png) to view **ER Diagram**
 
-## SQL Queries
-👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/SQL_quries_DigishopeXDB_MySQL.txt) to view important SQL queries that will help you interact with the database in your local machine
-
+## API Documentation
+👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/DigishopeX-api-documentation.pdf) to view **API Documentation**
 
 ## API Root Endpoint
 `http://localhost:8088/`
@@ -74,8 +73,9 @@ Overall, this RESTful web service provides extensive functionalities to perform 
 </p>
 - Use caching to reduce number of API calls.
 
-## API Documentation
-👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/DigishopeX-api-documentation.pdf) to view **API Documentation**
+## SQL Queries
+👉 [Click here](https://github.com/ipaul1996/DigishopeX/blob/master/Resources/SQL_quries_DigishopeXDB_MySQL.txt) to view important SQL queries that will help you interact with the database in your local machine
+
 
 
 ## Feedback
